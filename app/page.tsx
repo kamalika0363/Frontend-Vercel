@@ -1,5 +1,5 @@
 import {db} from "@/lib/db";
-import {Franchise, DB} from "@/lib/kysely-types"; // Adjust the path as necessary
+import {Franchise} from "@/lib/kysely-types"; // Adjust the path as necessary
 
 export default async function Home() {
 
