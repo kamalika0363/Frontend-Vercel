@@ -1,8 +1,7 @@
 import {db} from '@/lib/db';
 import {Metadata} from 'next';
 import Image from 'next/image';
-import {Simplify} from "kysely";
-import {AllSelection} from "kysely/dist/cjs/parser/select-parser";
+import {Franchise} from "@/lib/kysely-types";
 
 interface Props {
     params: {
@@ -11,7 +10,7 @@ interface Props {
 }
 
 export async function generateMetadata({params}: Props): Promise<Metadata> {
-    const franchise: Simplify<{} & AllSelection<DB, "franchise">> | undefined | null = await db
+    const franchise: Franchise = await db
         .selectFrom('franchise')
         .selectAll()
         .where('franchiseId', '=', params.id)
@@ -25,7 +24,7 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
 }
 
 export default async function FranchiseProfile({params}: Props) {
-    const franchise: Simplify<{} & AllSelection<DB, "franchise">> | undefined | null = await db
+    const franchise: Franchise = await db
         .selectFrom('franchise')
         .selectAll()
         .where('franchiseId', '=', params.id)

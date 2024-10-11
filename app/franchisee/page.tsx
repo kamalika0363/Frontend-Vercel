@@ -4,9 +4,10 @@ import {Simplify} from "kysely";
 import {AllSelection} from "kysely/dist/cjs/parser/select-parser";
 import {ExtractTableAlias} from "kysely/dist/cjs/parser/table-parser";
 import {DB} from "kysely-codegen";
+import {Franchisee} from "@/lib/kysely-types";
 
 export default async function FranchiseList() {
-    const franchisee: Simplify<{} & AllSelection<DB, ExtractTableAlias<DB, "franchisee">>>[] = await db
+    const franchisee: Franchisee = await db
         .selectFrom('franchisee')
         .selectAll()
         .execute();

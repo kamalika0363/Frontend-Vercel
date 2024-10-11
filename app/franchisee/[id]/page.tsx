@@ -1,9 +1,7 @@
-import { db } from '@/lib/db';
-import { Metadata } from 'next';
-import Image from 'next/image';
-import { Simplify } from "kysely";
-import { AllSelection } from "kysely/dist/cjs/parser/select-parser";
-import { DB } from "kysely-codegen";
+import {db} from '@/lib/db';
+import {Metadata} from 'next';
+import {DB} from "kysely-codegen";
+import {Franchisee} from "@/lib/kysely-types";
 
 interface Props {
     params: {
@@ -11,8 +9,8 @@ interface Props {
     };
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const franchisee: Simplify<{} & AllSelection<DB, "franchisee">> | undefined | null = await db
+export async function generateMetadata({params}: Props): Promise<Metadata> {
+    const franchisee: Franchisee = await db
         .selectFrom('franchisee')
         .selectAll()
         .where('franchiseeId', '=', params.id)
@@ -22,11 +20,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             return null;
         });
 
-    return { title: `Franchisee profile of ${franchisee?.franchiseeName}` };
+    return {title: `Franchisee profile of ${franchisee?.franchiseeName}`};
 }
 
-export default async function FranchiseeProfile({ params }: Props) {
-    const franchisee: Simplify<{} & AllSelection<DB, "franchisee">> | undefined | null = await db
+export default async function FranchiseeProfile({params}: Props) {
+    const franchisee: Franchisee = await db
         .selectFrom('franchisee')
         .selectAll()
         .where('franchiseeId', '=', params.id)
