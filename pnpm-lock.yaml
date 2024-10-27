@@ -11,6 +11,9 @@ dependencies:
   '@nextui-org/react':
     specifier: 2.0.22
     version: 2.0.22(@types/react@18.0.20)(framer-motion@10.18.0)(react-dom@18.2.0)(react@18.2.0)(tailwindcss@3.4.14)
+  '@nextui-org/spinner':
+    specifier: ^2.0.34
+    version: 2.0.34(@nextui-org/theme@2.2.11)(react-dom@18.2.0)(react@18.2.0)
   '@nextui-org/table':
     specifier: ^2.0.40
     version: 2.0.40(@nextui-org/system@2.0.5)(@nextui-org/theme@2.2.11)(react-dom@18.2.0)(react@18.2.0)
@@ -29,6 +32,9 @@ dependencies:
   framer-motion:
     specifier: ^10.16.0
     version: 10.18.0(react-dom@18.2.0)(react@18.2.0)
+  lucide-react:
+    specifier: ^0.453.0
+    version: 0.453.0(react@18.2.0)
   next:
     specifier: ^14.0.4
     version: 14.2.16(react-dom@18.2.0)(react@18.2.0)
@@ -1043,6 +1049,21 @@ packages:
       react: 18.2.0
     transitivePeerDependencies:
       - tailwindcss
+    dev: false
+
+  /@nextui-org/spinner@2.0.34(@nextui-org/theme@2.2.11)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-YKw/6xSLhsXU1k22OvYKyWhtJCHzW2bRAiieVSVG5xak3gYwknTds5H9s5uur+oAZVK9AkyAObD19QuZND32Jg==}
+    peerDependencies:
+      '@nextui-org/theme': '>=2.1.0'
+      react: '>=18'
+      react-dom: '>=18'
+    dependencies:
+      '@nextui-org/react-utils': 2.0.17(react@18.2.0)
+      '@nextui-org/shared-utils': 2.0.8
+      '@nextui-org/system-rsc': 2.1.6(@nextui-org/theme@2.2.11)(react@18.2.0)
+      '@nextui-org/theme': 2.2.11(tailwindcss@3.4.14)
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
     dev: false
 
   /@nextui-org/spinner@2.0.9(react@18.2.0)(tailwindcss@3.4.14):
@@ -4182,6 +4203,14 @@ packages:
 
   /lru-cache@10.4.3:
     resolution: {integrity: sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ==}
+
+  /lucide-react@0.453.0(react@18.2.0):
+    resolution: {integrity: sha512-kL+RGZCcJi9BvJtzg2kshO192Ddy9hv3ij+cPrVPWSRzgCWCVazoQJxOjAwgK53NomL07HB7GPHW120FimjNhQ==}
+    peerDependencies:
+      react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0-rc
+    dependencies:
+      react: 18.2.0
+    dev: false
 
   /merge2@1.4.1:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==}

@@ -1,14 +1,25 @@
 import React from "react";
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Pagination, getKeyValue, Radio, RadioGroup } from "@nextui-org/react";
-import { users } from "./data";
+import {
+    Table,
+    TableHeader,
+    TableColumn,
+    TableBody,
+    TableRow,
+    TableCell,
+    Pagination,
+    getKeyValue,
+    Radio,
+    RadioGroup
+} from "@nextui-org/react";
+import {users} from "./data";
 
 const columns = [
-    { key: "name", label: "NAME" },
-    { key: "role", label: "ROLE" },
-    { key: "status", label: "STATUS" },
+    {key: "name", label: "NAME"},
+    {key: "role", label: "ROLE"},
+    {key: "status", label: "STATUS"},
 ];
 
-export default function App() {
+export default function FranchiseInfoTable() {
     const [selectionBehavior, setSelectionBehavior] = React.useState("toggle");
     const [page, setPage] = React.useState(1);
     const rowsPerPage = 8;

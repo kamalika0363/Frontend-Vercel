@@ -1,5 +1,5 @@
 "use client";
-import FranchiseInfoTable from "@/components/franchise-info-table";
+import FranchiseInfoTable from "../../../components/order-table";
 
 export default function ActiveProducts() {
     return (
