@@ -97,12 +97,14 @@ export default function OrdersTable() {
             );
         }
 
+        // @ts-ignore
         if (statusFilter !== "All") {
             const statusMapping = {
                 "Ready for Pickup": "completed",
                 "Queue": "pending",
                 "In Preparation": "pending",
             };
+            // @ts-ignore
             const statusToCheck = statusMapping[statusFilter];
             filteredUsers = filteredUsers.filter((user) =>
                 user.orderStatus === statusToCheck
@@ -150,6 +152,7 @@ export default function OrdersTable() {
             case "amount":
                 return cellValue;
             case "date":
+                // @ts-ignore
                 return formatDate(cellValue as string);
             default:
                 return cellValue;
