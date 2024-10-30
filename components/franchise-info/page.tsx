@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useState, useMemo} from "react"
+import React, { useState, useMemo } from "react"
 import {
     Table,
     TableHeader,
@@ -11,10 +11,10 @@ import {
     Input,
     Button,
 } from "@nextui-org/react"
-import {users} from "./data"
-import {Pencil1Icon, TrashIcon} from "@radix-ui/react-icons"
+import { Pencil1Icon, TrashIcon } from "@radix-ui/react-icons"
 import EditFranchiseModal from "@/components/modals/EditFranchiseModal"
 import DeleteFranchiseModal from "@/components/modals/DeleteFranchiseModal"
+import { users as franchiseData } from "./data";
 
 export const formatDate = (dateString: string) => {
     const [year, month, day] = dateString.split("-")
@@ -22,14 +22,24 @@ export const formatDate = (dateString: string) => {
 }
 
 const columns = [
-    {key: "franchiseeLocation", label: "FRANCHISEE LOCATION"},
-    {key: "managerName", label: "MANAGER NAME"},
-    {key: "dateEstablished", label: "DATE ESTABLISHED"},
-    {key: "email", label: "EMAIL"},
-    {key: "actions", label: "ACTIONS"},
+    { key: "franchiseeLocation", label: "FRANCHISEE LOCATION" },
+    { key: "managerName", label: "MANAGER NAME" },
+    { key: "dateEstablished", label: "DATE ESTABLISHED" },
+    { key: "email", label: "EMAIL" },
+    { key: "actions", label: "ACTIONS" },
 ]
 
+interface Franchise {
+    key: string;
+    franchiseeLocation: string;
+    managerName: string;
+    dateEstablished: string;
+    email: string;
+}
+
 export default function FranchiseInfoTable() {
+    const [franchises, setFranchises] = useState<Franchise[]>(franchiseData) // Set state using imported data
+
     const [page, setPage] = useState(1)
     const rowsPerPage = 8
 
@@ -37,44 +47,48 @@ export default function FranchiseInfoTable() {
     const [managerFilter, setManagerFilter] = useState("")
     const [emailFilter, setEmailFilter] = useState("")
 
-    const [editModalFranchise, setEditModalFranchise] = useState(null)
-    const [deleteModalFranchise, setDeleteModalFranchise] = useState(null)
+    const [editModalFranchise, setEditModalFranchise] = useState<Franchise | null>(null)
+    const [deleteModalFranchise, setDeleteModalFranchise] = useState<Franchise | null>(null)
 
-    const filteredUsers = useMemo(() => {
-        return users.filter((user) => {
+    const filteredFranchises = useMemo(() => {
+        return franchises.filter((franchise) => {
             return (
-                user.franchiseeLocation.toLowerCase().includes(locationFilter.toLowerCase()) &&
-                user.managerName.toLowerCase().includes(managerFilter.toLowerCase()) &&
-                user.email.toLowerCase().includes(emailFilter.toLowerCase())
+                franchise.franchiseeLocation.toLowerCase().includes(locationFilter.toLowerCase()) &&
+                franchise.managerName.toLowerCase().includes(managerFilter.toLowerCase()) &&
+                franchise.email.toLowerCase().includes(emailFilter.toLowerCase())
             )
         })
-    }, [locationFilter, managerFilter, emailFilter])
+    }, [franchises, locationFilter, managerFilter, emailFilter])
 
-    const pages = Math.ceil(filteredUsers.length / rowsPerPage)
+    const pages = Math.ceil(filteredFranchises.length / rowsPerPage)
 
     const items = useMemo(() => {
         const start = (page - 1) * rowsPerPage
         const end = start + rowsPerPage
-        return filteredUsers.slice(start, end)
-    }, [page, filteredUsers])
+        return filteredFranchises.slice(start, end)
+    }, [page, filteredFranchises])
 
-    const handleEdit = (franchise: any) => {
+    const handleEdit = (franchise: Franchise) => {
         setEditModalFranchise(franchise)
     }
 
-    const handleDelete = (franchise: any) => {
+    const handleDelete = (franchise: Franchise) => {
         setDeleteModalFranchise(franchise)
     }
 
-    const handleSaveEdit = (editedFranchise: any) => {
-        // Implement the logic to save the edited franchise
-        console.log("Saving edited franchise:", editedFranchise)
+    const handleSaveEdit = (editedFranchise: Franchise) => {
+        setFranchises(prevFranchises =>
+            prevFranchises.map(franchise =>
+                franchise.key === editedFranchise.key ? editedFranchise : franchise
+            )
+        )
         setEditModalFranchise(null)
     }
 
-    const handleConfirmDelete = (franchise: any) => {
-        // Implement the logic to delete the franchise
-        console.log("Deleting franchise:", franchise)
+    const handleConfirmDelete = (franchise: Franchise) => {
+        setFranchises(prevFranchises =>
+            prevFranchises.filter(f => f.key !== franchise.key)
+        )
         setDeleteModalFranchise(null)
     }
 
@@ -116,7 +130,7 @@ export default function FranchiseInfoTable() {
                                                 onClick={() => handleEdit(item)}
                                                 className="bg-[#e6f6eb] text-[#1e8255] border-[#1e8255]"
                                             >
-                                                <Pencil1Icon className="h-4 w-4"/>
+                                                <Pencil1Icon className="h-4 w-4" />
                                             </Button>
                                             <Button
                                                 isIconOnly
@@ -124,13 +138,13 @@ export default function FranchiseInfoTable() {
                                                 onClick={() => handleDelete(item)}
                                                 className="bg-[#feebec] text-[#ce292e] border-[#ce292e]"
                                             >
-                                                <TrashIcon className="h-4 w-4"/>
+                                                <TrashIcon className="h-4 w-4" />
                                             </Button>
                                         </div>
                                     ) : columnKey === "dateEstablished" ? (
                                         formatDate(item[columnKey])
                                     ) : (
-                                        item[columnKey] || ""
+                                        item[columnKey as keyof Franchise] || ""
                                     )}
                                 </TableCell>
                             )}

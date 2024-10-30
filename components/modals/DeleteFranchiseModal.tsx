@@ -1,12 +1,22 @@
 'use client'
 
-import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button} from "@nextui-org/react"
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from "@nextui-org/react"
 
-export default function DeleteFranchiseModal({franchise, onClose, onDelete}: {
-    franchise: any,
-    onClose: any,
-    onDelete: any
-}) {
+interface Franchise {
+    key: string;
+    franchiseeLocation: string;
+    managerName: string;
+    dateEstablished: string;
+    email: string;
+}
+
+interface DeleteFranchiseModalProps {
+    franchise: Franchise | null;
+    onClose: () => void;
+    onDelete: (franchise: Franchise) => void;
+}
+
+export default function DeleteFranchiseModal({ franchise, onClose, onDelete }: DeleteFranchiseModalProps) {
     if (!franchise) return null
 
     const handleDelete = () => {

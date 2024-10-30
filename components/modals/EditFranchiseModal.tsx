@@ -1,32 +1,44 @@
 'use client'
 
-import {useState, useEffect} from 'react'
-import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input} from "@nextui-org/react"
+import { useState, useEffect } from 'react'
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input } from "@nextui-org/react"
 
-export default function EditFranchiseModal({franchise, onClose, onSave}: {
-    franchise: any,
-    onClose: any,
-    onSave: any
-}) {
-    const [editedFranchise, setEditedFranchise] = useState(franchise || {})
+interface Franchise {
+    key: string;
+    franchiseeLocation: string;
+    managerName: string;
+    dateEstablished: string;
+    email: string;
+}
+
+interface EditFranchiseModalProps {
+    franchise: Franchise | null;
+    onClose: () => void;
+    onSave: (editedFranchise: Franchise) => void;
+}
+
+export default function EditFranchiseModal({ franchise, onClose, onSave }: EditFranchiseModalProps) {
+    const [editedFranchise, setEditedFranchise] = useState<Franchise | null>(null)
 
     useEffect(() => {
         if (franchise) {
-            setEditedFranchise(franchise)
+            setEditedFranchise({ ...franchise })
         }
     }, [franchise])
 
-    const handleInputChange = (e: any) => {
-        const {name, value} = e.target
-        setEditedFranchise(prev => ({...prev, [name]: value}))
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target
+        setEditedFranchise(prev => prev ? { ...prev, [name]: value } : null)
     }
 
     const handleSave = () => {
-        onSave(editedFranchise)
+        if (editedFranchise) {
+            onSave(editedFranchise)
+        }
         onClose()
     }
 
-    if (!franchise) return null
+    if (!franchise || !editedFranchise) return null
 
     return (
         <Modal isOpen={!!franchise} onClose={onClose}>
@@ -38,27 +50,27 @@ export default function EditFranchiseModal({franchise, onClose, onSave}: {
                             <Input
                                 label="Franchisee Location"
                                 name="franchiseeLocation"
-                                value={editedFranchise.franchiseeLocation || ''}
+                                value={editedFranchise.franchiseeLocation}
                                 onChange={handleInputChange}
                             />
                             <Input
                                 label="Manager Name"
                                 name="managerName"
-                                value={editedFranchise.managerName || ''}
+                                value={editedFranchise.managerName}
                                 onChange={handleInputChange}
                             />
                             <Input
                                 label="Date Established"
                                 name="dateEstablished"
                                 type="date"
-                                value={editedFranchise.dateEstablished || ''}
+                                value={editedFranchise.dateEstablished}
                                 onChange={handleInputChange}
                             />
                             <Input
                                 label="Email"
                                 name="email"
                                 type="email"
-                                value={editedFranchise.email || ''}
+                                value={editedFranchise.email}
                                 onChange={handleInputChange}
                             />
                         </ModalBody>
