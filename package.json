@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@nextui-org/dropdown": "^2.1.31",
+    "@nextui-org/modal": "^2.0.41",
     "@nextui-org/pagination": "^2.0.36",
     "@nextui-org/react": "2.0.22",
     "@nextui-org/spinner": "^2.0.34",

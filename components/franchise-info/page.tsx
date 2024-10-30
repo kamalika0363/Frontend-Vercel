@@ -1,4 +1,6 @@
-import React from "react";
+'use client'
+
+import React, {useState, useMemo} from "react"
 import {
     Table,
     TableHeader,
@@ -7,15 +9,17 @@ import {
     TableRow,
     TableCell,
     Input,
-} from "@nextui-org/react";
-import {users} from "./data";
-import {Pencil1Icon, TrashIcon} from "@radix-ui/react-icons";
+    Button,
+} from "@nextui-org/react"
+import {users} from "./data"
+import {Pencil1Icon, TrashIcon} from "@radix-ui/react-icons"
+import EditFranchiseModal from "@/components/modals/EditFranchiseModal"
+import DeleteFranchiseModal from "@/components/modals/DeleteFranchiseModal"
 
-// @ts-ignore
-export const formatDate = (dateString) => {
-    const [year, month, day] = dateString.split("-");
-    return `${day}/${month}/${year}`;
-};
+export const formatDate = (dateString: string) => {
+    const [year, month, day] = dateString.split("-")
+    return `${day}/${month}/${year}`
+}
 
 const columns = [
     {key: "franchiseeLocation", label: "FRANCHISEE LOCATION"},
@@ -23,34 +27,56 @@ const columns = [
     {key: "dateEstablished", label: "DATE ESTABLISHED"},
     {key: "email", label: "EMAIL"},
     {key: "actions", label: "ACTIONS"},
-];
+]
 
 export default function FranchiseInfoTable() {
-    const [selectionBehavior, setSelectionBehavior] = React.useState("toggle");
-    const [page, setPage] = React.useState(1);
-    const rowsPerPage = 8;
+    const [page, setPage] = useState(1)
+    const rowsPerPage = 8
 
-    const [locationFilter, setLocationFilter] = React.useState("");
-    const [managerFilter, setManagerFilter] = React.useState("");
-    const [emailFilter, setEmailFilter] = React.useState("");
+    const [locationFilter, setLocationFilter] = useState("")
+    const [managerFilter, setManagerFilter] = useState("")
+    const [emailFilter, setEmailFilter] = useState("")
 
-    const filteredUsers = React.useMemo(() => {
+    const [editModalFranchise, setEditModalFranchise] = useState(null)
+    const [deleteModalFranchise, setDeleteModalFranchise] = useState(null)
+
+    const filteredUsers = useMemo(() => {
         return users.filter((user) => {
             return (
                 user.franchiseeLocation.toLowerCase().includes(locationFilter.toLowerCase()) &&
                 user.managerName.toLowerCase().includes(managerFilter.toLowerCase()) &&
                 user.email.toLowerCase().includes(emailFilter.toLowerCase())
-            );
-        });
-    }, [locationFilter, managerFilter, emailFilter, users]);
+            )
+        })
+    }, [locationFilter, managerFilter, emailFilter])
 
-    const pages = Math.ceil(filteredUsers.length / rowsPerPage);
+    const pages = Math.ceil(filteredUsers.length / rowsPerPage)
 
-    const items = React.useMemo(() => {
-        const start = (page - 1) * rowsPerPage;
-        const end = start + rowsPerPage;
-        return filteredUsers.slice(start, end);
-    }, [page, filteredUsers]);
+    const items = useMemo(() => {
+        const start = (page - 1) * rowsPerPage
+        const end = start + rowsPerPage
+        return filteredUsers.slice(start, end)
+    }, [page, filteredUsers])
+
+    const handleEdit = (franchise: any) => {
+        setEditModalFranchise(franchise)
+    }
+
+    const handleDelete = (franchise: any) => {
+        setDeleteModalFranchise(franchise)
+    }
+
+    const handleSaveEdit = (editedFranchise: any) => {
+        // Implement the logic to save the edited franchise
+        console.log("Saving edited franchise:", editedFranchise)
+        setEditModalFranchise(null)
+    }
+
+    const handleConfirmDelete = (franchise: any) => {
+        // Implement the logic to delete the franchise
+        console.log("Deleting franchise:", franchise)
+        setDeleteModalFranchise(null)
+    }
 
     return (
         <div className="flex flex-col gap-3">
@@ -59,26 +85,20 @@ export default function FranchiseInfoTable() {
                     placeholder="Search by Location"
                     value={locationFilter}
                     onChange={(e) => setLocationFilter(e.target.value)}
-                    isClearable
                 />
                 <Input
                     placeholder="Search by Manager Name"
                     value={managerFilter}
                     onChange={(e) => setManagerFilter(e.target.value)}
-                    isClearable
                 />
                 <Input
                     placeholder="Search by Email"
                     value={emailFilter}
                     onChange={(e) => setEmailFilter(e.target.value)}
-                    isClearable
                 />
             </div>
             <Table
-                radius="sm"
                 aria-label="Franchise information table with pagination"
-                selectionMode="multiple"
-                selectionBehavior={selectionBehavior}
             >
                 <TableHeader columns={columns}>
                     {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
@@ -90,17 +110,27 @@ export default function FranchiseInfoTable() {
                                 <TableCell>
                                     {columnKey === "actions" ? (
                                         <div className="flex space-x-2">
-                                            <button aria-label="Edit">
-                                                <Pencil1Icon color="#1e8255" className="border p-1 bg-[#e6f6eb] border-[#1e8255] rounded-full h-6 w-6"/>
-                                            </button>
-                                            <button aria-label="Delete">
-                                                <TrashIcon color="#ce292e" className="border p-1 bg-[#feebec] border-[#ce292e] rounded-full h-6 w-6"/>
-                                            </button>
+                                            <Button
+                                                isIconOnly
+                                                aria-label="Edit"
+                                                onClick={() => handleEdit(item)}
+                                                className="bg-[#e6f6eb] text-[#1e8255] border-[#1e8255]"
+                                            >
+                                                <Pencil1Icon className="h-4 w-4"/>
+                                            </Button>
+                                            <Button
+                                                isIconOnly
+                                                aria-label="Delete"
+                                                onClick={() => handleDelete(item)}
+                                                className="bg-[#feebec] text-[#ce292e] border-[#ce292e]"
+                                            >
+                                                <TrashIcon className="h-4 w-4"/>
+                                            </Button>
                                         </div>
                                     ) : columnKey === "dateEstablished" ? (
-                                        formatDate(item.dateEstablished)
+                                        formatDate(item[columnKey])
                                     ) : (
-                                        item[columnKey]
+                                        item[columnKey] || ""
                                     )}
                                 </TableCell>
                             )}
@@ -108,18 +138,17 @@ export default function FranchiseInfoTable() {
                     )}
                 </TableBody>
             </Table>
-            {/* Uncomment the Pagination if needed */}
-            {/* <div className="flex justify-center"> */}
-            {/*     <Pagination */}
-            {/*         isCompact */}
-            {/*         showControls */}
-            {/*         showShadow */}
-            {/*         color="secondary" */}
-            {/*         page={page} */}
-            {/*         total={pages} */}
-            {/*         onChange={(page) => setPage(page)} */}
-            {/*     /> */}
-            {/* </div> */}
+
+            <EditFranchiseModal
+                franchise={editModalFranchise}
+                onClose={() => setEditModalFranchise(null)}
+                onSave={handleSaveEdit}
+            />
+            <DeleteFranchiseModal
+                franchise={deleteModalFranchise}
+                onClose={() => setDeleteModalFranchise(null)}
+                onDelete={handleConfirmDelete}
+            />
         </div>
-    );
+    )
 }
