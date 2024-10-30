@@ -7,10 +7,12 @@ const columns = [
 
 const statusOptions = [
     {name: "Completed", uid: "completed"},
-    {name: "Pending", uid: "pending"},
-    {name: "Cancelled", uid: "cancelled"}
+    {name: "Queue", uid: "queue"},
+    {name: "Ready for Pickup", uid: "readyForPickup"},
+    {name: "In Preparation", uid: "inPreparation"}
 ];
 
+// Update the users array to use the new statuses
 const users = [
     {
         id: 1,
@@ -23,7 +25,7 @@ const users = [
     {
         id: 2,
         location: "Los Angeles",
-        orderStatus: "pending",
+        orderStatus: "queue",
         date: "2024-10-22",
         amount: "$200.00",
         email: "customer2@example.com"
@@ -31,7 +33,7 @@ const users = [
     {
         id: 3,
         location: "Chicago",
-        orderStatus: "cancelled",
+        orderStatus: "in preparation",
         date: "2024-10-21",
         amount: "$75.00",
         email: "customer3@example.com"
@@ -47,7 +49,7 @@ const users = [
     {
         id: 5,
         location: "Phoenix",
-        orderStatus: "pending",
+        orderStatus: "queue",
         date: "2024-10-19",
         amount: "$125.00",
         email: "customer5@example.com"
@@ -55,7 +57,7 @@ const users = [
     {
         id: 6,
         location: "Philadelphia",
-        orderStatus: "cancelled",
+        orderStatus: "in preparation",
         date: "2024-10-18",
         amount: "$50.00",
         email: "customer4@example.com"
@@ -79,7 +81,7 @@ const users = [
     {
         id: 9,
         location: "Dallas",
-        orderStatus: "pending",
+        orderStatus: "queue",
         date: "2024-10-15",
         amount: "$180.00",
         email: "customer9@example.com"
@@ -87,7 +89,7 @@ const users = [
     {
         id: 10,
         location: "San Jose",
-        orderStatus: "cancelled",
+        orderStatus: "in preparation",
         date: "2024-10-14",
         amount: "$60.00",
         email: "customer10@example.com"
@@ -103,7 +105,7 @@ const users = [
     {
         id: 12,
         location: "Jacksonville",
-        orderStatus: "pending",
+        orderStatus: "queue",
         date: "2024-10-12",
         amount: "$90.00",
         email: "customer12@example.com"
@@ -119,7 +121,7 @@ const users = [
     {
         id: 14,
         location: "Columbus",
-        orderStatus: "cancelled",
+        orderStatus: "in preparation",
         date: "2024-10-10",
         amount: "$40.00",
         email: "customer14@example.com"
@@ -135,7 +137,7 @@ const users = [
     {
         id: 16,
         location: "Indianapolis",
-        orderStatus: "pending",
+        orderStatus: "queue",
         date: "2024-10-08",
         amount: "$110.00",
         email: "customer16@example.com"
@@ -143,7 +145,7 @@ const users = [
     {
         id: 17,
         location: "Charlotte",
-        orderStatus: "cancelled",
+        orderStatus: "in preparation",
         date: "2024-10-07",
         amount: "$30.00",
         email: "customer17@example.com"
@@ -159,7 +161,7 @@ const users = [
     {
         id: 19,
         location: "Denver",
-        orderStatus: "pending",
+        orderStatus: "queue",
         date: "2024-10-05",
         amount: "$125.00",
         email: "customer19@example.com"
