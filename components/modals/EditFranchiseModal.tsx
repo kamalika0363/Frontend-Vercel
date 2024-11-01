@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input } from "@nextui-org/react"
+import {useState, useEffect} from 'react'
+import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input} from "@nextui-org/react"
 
 interface Franchise {
     key: string;
@@ -17,18 +17,18 @@ interface EditFranchiseModalProps {
     onSave: (editedFranchise: Franchise) => void;
 }
 
-export default function EditFranchiseModal({ franchise, onClose, onSave }: EditFranchiseModalProps) {
+export default function EditFranchiseModal({franchise, onClose, onSave}: EditFranchiseModalProps) {
     const [editedFranchise, setEditedFranchise] = useState<Franchise | null>(null)
 
     useEffect(() => {
         if (franchise) {
-            setEditedFranchise({ ...franchise })
+            setEditedFranchise({...franchise})
         }
     }, [franchise])
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target
-        setEditedFranchise(prev => prev ? { ...prev, [name]: value } : null)
+        const {name, value} = e.target
+        setEditedFranchise(prev => prev ? {...prev, [name]: value} : null)
     }
 
     const handleSave = () => {

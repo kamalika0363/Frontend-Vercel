@@ -1,38 +1,39 @@
 'use client'
 
-import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button} from "@nextui-org/react"
+import {Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader} from "@nextui-org/react";
 
-interface Franchise {
+interface Product {
     key: string;
-    franchiseeLocation: string;
-    managerName: string;
-    dateEstablished: string;
-    email: string;
+    productName: string;
+    stock: string;
+    sku: string;
+    availability: string;
+    actions: string;
 }
 
-interface DeleteFranchiseModalProps {
-    franchise: Franchise | null;
+interface DeleteProductModalProps {
+    product: Product | null;
     onClose: () => void;
-    onDelete: (franchise: Franchise) => void;
+    onDelete: (product: Product) => void;
 }
 
-export default function DeleteFranchiseModal({franchise, onClose, onDelete}: DeleteFranchiseModalProps) {
-    if (!franchise) return null
+export default function DeleteProductModal({product, onClose, onDelete}: DeleteProductModalProps) {
+    if (!product) return null
 
     const handleDelete = () => {
-        onDelete(franchise)
+        onDelete(product)
         onClose()
     }
 
     return (
-        <Modal isOpen={!!franchise} onClose={onClose}>
+        <Modal isOpen={!!product} onClose={onClose}>
             <ModalContent>
                 {(onClose) => (
                     <>
                         <ModalHeader className="flex flex-col gap-1">Confirm Deletion</ModalHeader>
                         <ModalBody>
                             <p>
-                                Are you sure you want to delete the franchise at {franchise.franchiseeLocation}?
+                                Are you sure you want to delete the product {product.productName}?
                                 This action cannot be undone.
                             </p>
                         </ModalBody>
