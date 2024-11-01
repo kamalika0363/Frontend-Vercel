@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useState, useMemo} from "react"
+import React, { useState, useMemo } from "react";
 import {
     Table,
     TableHeader,
@@ -11,100 +11,99 @@ import {
     Input,
     Button,
     Switch,
-    Checkbox,
     SortDescriptor
-} from "@nextui-org/react"
-import {Pencil1Icon, TrashIcon, ChevronUpIcon, ChevronDownIcon} from "@radix-ui/react-icons"
+} from "@nextui-org/react";
+import { Pencil1Icon, TrashIcon, ChevronUpIcon, ChevronDownIcon } from "@radix-ui/react-icons";
 
-import {products as productData, Product} from "./data"
+import { products as productData, Product } from "./data";
 import EditProductModal from "@/components/modals/EditProductModal";
 import DeleteProductModal from "@/components/modals/DeleteProductModal";
+import CustomPagination from "@/components/CustomPagination/page";
 
 const columns = [
-    {key: "productName", label: "PRODUCT NAME", sortable: true},
-    {key: "stock", label: "STOCK", sortable: true},
-    {key: "sku", label: "SKU", sortable: true},
-    {key: "availability", label: "AVAILABILITY", sortable: true},
-    {key: "actions", label: "ACTIONS"},
-]
+    { key: "productName", label: "PRODUCT NAME", sortable: true },
+    { key: "stock", label: "STOCK", sortable: true },
+    { key: "sku", label: "SKU", sortable: true },
+    { key: "availability", label: "AVAILABILITY", sortable: true },
+    { key: "actions", label: "ACTIONS" },
+];
 
 export default function ActiveProductsTable() {
-    const [products, setProducts] = useState<Product[]>(productData)
-    const [selectedKeys, setSelectedKeys] = useState(new Set([]))
+    const [products, setProducts] = useState<Product[]>(productData);
+    const [selectedKeys, setSelectedKeys] = useState(new Set([]));
     const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
         direction: "ascending",
-    })
+    });
 
-    const [page, setPage] = useState(1)
-    const rowsPerPage = 5
+    const [page, setPage] = useState(1);
+    const rowsPerPage = 5;
 
-    const [nameFilter, setNameFilter] = useState("")
-    const [skuFilter, setSkuFilter] = useState("")
+    const [nameFilter, setNameFilter] = useState("");
+    const [skuFilter, setSkuFilter] = useState("");
 
-    const [editModalProduct, setEditModalProduct] = useState<Product | null>(null)
-    const [deleteModalProduct, setDeleteModalProduct] = useState<Product | null>(null)
+    const [editModalProduct, setEditModalProduct] = useState<Product | null>(null);
+    const [deleteModalProduct, setDeleteModalProduct] = useState<Product | null>(null);
 
     const filteredProducts = useMemo(() => {
         return products.filter((product) => {
             return (
                 product.productName.toLowerCase().includes(nameFilter.toLowerCase()) &&
                 product.sku.toLowerCase().includes(skuFilter.toLowerCase())
-            )
-        })
-    }, [products, nameFilter, skuFilter])
+            );
+        });
+    }, [products, nameFilter, skuFilter]);
 
     const sortedItems = useMemo(() => {
         return [...filteredProducts].sort((a, b) => {
-            const first = a[sortDescriptor.column as keyof Product]
-            const second = b[sortDescriptor.column as keyof Product]
-            const cmp = first < second ? -1 : first > second ? 1 : 0
+            const first = a[sortDescriptor.column as keyof Product];
+            const second = b[sortDescriptor.column as keyof Product];
+            const cmp = first < second ? -1 : first > second ? 1 : 0;
 
-            return sortDescriptor.direction === "descending" ? -cmp : cmp
-        })
-    }, [filteredProducts, sortDescriptor])
+            return sortDescriptor.direction === "descending" ? -cmp : cmp;
+        });
+    }, [filteredProducts, sortDescriptor]);
 
-    const pages = Math.ceil(sortedItems.length / rowsPerPage)
+    const pages = Math.ceil(sortedItems.length / rowsPerPage);
 
     const items = useMemo(() => {
-        const start = (page - 1) * rowsPerPage
-        const end = start + rowsPerPage
-        return sortedItems.slice(start, end)
-    }, [page, sortedItems])
+        const start = (page - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        return sortedItems.slice(start, end);
+    }, [page, sortedItems]);
 
     const handleEdit = (product: Product) => {
-        setEditModalProduct(product)
-    }
+        setEditModalProduct(product);
+    };
 
     const handleDelete = (product: Product) => {
-        setDeleteModalProduct(product)
-    }
+        setDeleteModalProduct(product);
+    };
 
     const handleSaveEdit = (editedProduct: Product) => {
         setProducts(prevProducts =>
             prevProducts.map(product =>
                 product.key === editedProduct.key ? editedProduct : product
             )
-        )
-        setEditModalProduct(null)
-    }
+        );
+        setEditModalProduct(null);
+    };
 
     const handleConfirmDelete = (product: Product) => {
         setProducts(prevProducts =>
             prevProducts.filter(p => p.key !== product.key)
-        )
-        setDeleteModalProduct(null)
-    }
+        );
+        setDeleteModalProduct(null);
+    };
 
     const handleStockToggle = (product: Product) => {
         setProducts(prevProducts =>
             prevProducts.map(p =>
                 p.key === product.key
-                    ? {...p, stock: p.stock === "In-Stock" ? "Out-of-Stock" : "In-Stock"}
+                    ? { ...p, stock: p.stock === "In-Stock" ? "Out-of-Stock" : "In-Stock" }
                     : p
             )
-        )
-    }
-
+        );
+    };
 
     const renderCell = (product: Product, columnKey: React.Key) => {
         switch (columnKey) {
@@ -117,7 +116,7 @@ export default function ActiveProductsTable() {
                             onClick={() => handleEdit(product)}
                             className="bg-[#e6f6eb] text-[#1e8255] border-[#1e8255]"
                         >
-                            <Pencil1Icon className="h-4 w-4"/>
+                            <Pencil1Icon className="h-4 w-4" />
                         </Button>
                         <Button
                             isIconOnly
@@ -125,10 +124,10 @@ export default function ActiveProductsTable() {
                             onClick={() => handleDelete(product)}
                             className="bg-[#feebec] text-[#ce292e] border-[#ce292e]"
                         >
-                            <TrashIcon className="h-4 w-4"/>
+                            <TrashIcon className="h-4 w-4" />
                         </Button>
                     </div>
-                )
+                );
             case "stock":
                 return (
                     <Switch
@@ -139,12 +138,11 @@ export default function ActiveProductsTable() {
                     >
                         {product.stock}
                     </Switch>
-                )
+                );
             default:
-                return product[columnKey as keyof Product]
+                return product[columnKey as keyof Product];
         }
-    }
-
+    };
 
     return (
         <div className="flex flex-col gap-3">
@@ -177,9 +175,9 @@ export default function ActiveProductsTable() {
                             {column.label}
                             {column.sortable && column.key === sortDescriptor.column && (
                                 sortDescriptor.direction === "ascending" ? (
-                                    <ChevronUpIcon className="inline ml-1"/>
+                                    <ChevronUpIcon className="inline ml-1" />
                                 ) : (
-                                    <ChevronDownIcon className="inline ml-1"/>
+                                    <ChevronDownIcon className="inline ml-1" />
                                 )
                             )}
                         </TableColumn>
@@ -196,6 +194,15 @@ export default function ActiveProductsTable() {
                 </TableBody>
             </Table>
 
+            <CustomPagination
+                page={page}
+                pages={pages}
+                rowsPerPage={rowsPerPage}
+                totalItems={filteredProducts.length}
+                onPageChange={setPage}
+                filteredItems={filteredProducts}
+            />
+
             <EditProductModal
                 product={editModalProduct}
                 onClose={() => setEditModalProduct(null)}
@@ -207,5 +214,5 @@ export default function ActiveProductsTable() {
                 onDelete={handleConfirmDelete}
             />
         </div>
-    )
+    );
 }
