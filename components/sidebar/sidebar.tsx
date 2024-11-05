@@ -1,3 +1,4 @@
+'use client';
 import React from "react";
 import {Sidebar} from "./sidebar.styles";
 import {SidebarItem} from "./sidebar-item";
@@ -6,12 +7,13 @@ import {useSidebarContext} from "../layout/layout-context";
 import {usePathname} from "next/navigation";
 import Image from "next/image";
 import logo from "../../public/logo.svg";
-import {ClipboardIcon, CodeSandboxLogoIcon, CubeIcon, PersonIcon} from "@radix-ui/react-icons";
+import {ClipboardIcon, CodeSandboxLogoIcon, CubeIcon, LayersIcon, Pencil2Icon, PersonIcon} from "@radix-ui/react-icons";
 import {Button} from "@nextui-org/react";
 
 export const SidebarWrapper = () => {
     const pathname = usePathname();
     const {collapsed, setCollapsed} = useSidebarContext();
+    const isFranchisor = pathname.startsWith('/franchisee');
 
     return (
         <aside className="h-screen z-[20] sticky top-0">
@@ -29,30 +31,52 @@ export const SidebarWrapper = () => {
                 <div className="flex flex-col justify-between h-full">
                     <div className={Sidebar.Body()}>
                         <SidebarMenu title="Main Menu">
-                            <SidebarItem
-                                isActive={pathname === "/orders"}
-                                title="Orders"
-                                icon={<CubeIcon />}
-                                href="orders"
-                            />
-                            <SidebarItem
-                                isActive={pathname === "/franchise-info-history"}
-                                title="Orders History"
-                                icon={<ClipboardIcon />}
-                                href="franchise-info-history"
-                            />
-                            <SidebarItem
-                                isActive={pathname === "/franchise-info"}
-                                title="Franchise Information"
-                                icon={<PersonIcon />}
-                                href="franchise-info"
-                            />
-                            <SidebarItem
-                                isActive={pathname === "/active-products"}
-                                title="Active Products"
-                                icon={<CodeSandboxLogoIcon/>}
-                                href="active-products"
-                            />
+                            {isFranchisor ? (
+                                <>
+                                    <SidebarItem
+                                        isActive={pathname === "/franchisee/orders"}
+                                        title="Orders"
+                                        icon={<CubeIcon/>}
+                                        href="/franchisee/orders"/>
+                                    <SidebarItem
+                                        isActive={pathname === "/franchisee/place-order"}
+                                        title="Place Order"
+                                        icon={<LayersIcon/>}
+                                        href="/franchisee/place-order"/>
+                                    <SidebarItem
+                                        isActive={pathname === "/franchisee/order-history"}
+                                        title="Order History"
+                                        icon={<Pencil2Icon/>}
+                                        href="/franchisee/order-history"/>
+                                </>
+                            ) : (
+                                <>
+                                    <SidebarItem
+                                        isActive={pathname === "/orders"}
+                                        title="Orders"
+                                        icon={<CubeIcon/>}
+                                        href="/franchisor/orders"
+                                    />
+                                    <SidebarItem
+                                        isActive={pathname === "/franchise-info-history"}
+                                        title="Orders History"
+                                        icon={<ClipboardIcon/>}
+                                        href="/franchisor/franchise-info-history"
+                                    />
+                                    <SidebarItem
+                                        isActive={pathname === "/franchise-info"}
+                                        title="Franchise Information"
+                                        icon={<PersonIcon/>}
+                                        href="/franchisor/franchise-info"
+                                    />
+                                    <SidebarItem
+                                        isActive={pathname === "/active-products"}
+                                        title="Active Products"
+                                        icon={<CodeSandboxLogoIcon/>}
+                                        href="/franchisor/active-products"
+                                    />
+                                </>
+                            )}
                         </SidebarMenu>
                     </div>
                 </div>
@@ -61,5 +85,6 @@ export const SidebarWrapper = () => {
                 </Button>
             </div>
         </aside>
-    );
+    )
+        ;
 };

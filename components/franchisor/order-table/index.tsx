@@ -17,7 +17,7 @@ import {
 } from "@nextui-org/react"
 import {columns, users} from "./data"
 import {formatDate} from "./utils"
-import {ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ChevronDown} from "lucide-react"
+import {ChevronDown} from "lucide-react"
 import type {SortDescriptor} from "@nextui-org/table"
 import CustomPagination from "@/components/CustomPagination/page";
 
@@ -99,7 +99,6 @@ export default function OrdersTable() {
                 user.orderStatus === statusFilter.toLowerCase()
             )
         }
-
         return filteredUsers
     }, [usersData, locationFilter, dateFilter, statusFilter])
 
