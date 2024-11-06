@@ -1,53 +1,48 @@
 'use client'
 
-import {Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader} from "@nextui-org/react";
+import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
 
-interface Product {
+interface Order {
     key: string;
-    productName: string;
-    stock: string;
-    sku: string;
-    availability: string;
-    actions: string;
+    orderInvoice: string;
+    orderStatus: string;
+    date: string;
+    amount: string;
 }
 
-interface DeleteProductModalProps {
-    product: Product | null;
+interface DeleteOrderModalProps {
+    order: Order | null;
     onClose: () => void;
-    onDelete: (product: Product) => void;
+    onDelete: (order: Order) => void;
 }
 
-export default function DeleteProductModal({product, onClose, onDelete}: DeleteProductModalProps) {
-    if (!product) return null
+export default function DeleteOrderModal({ order, onClose, onDelete }: DeleteOrderModalProps) {
+    if (!order) return null;
 
     const handleDelete = () => {
-        onDelete(product)
-        onClose()
-    }
+        onDelete(order);
+        onClose();
+    };
 
     return (
-        <Modal isOpen={!!product} onClose={onClose}>
+        <Modal isOpen={!!order} onClose={onClose}>
             <ModalContent>
-                {(onClose) => (
-                    <>
-                        <ModalHeader className="flex flex-col gap-1">Confirm Deletion</ModalHeader>
-                        <ModalBody>
-                            <p>
-                                Are you sure you want to delete the product {product.productName}?
-                                This action cannot be undone.
-                            </p>
-                        </ModalBody>
-                        <ModalFooter>
-                            <Button color="default" variant="light" onPress={onClose}>
-                                Cancel
-                            </Button>
-                            <Button color="danger" onPress={handleDelete}>
-                                Delete
-                            </Button>
-                        </ModalFooter>
-                    </>
-                )}
+                <ModalHeader className="flex flex-col gap-1">Confirm Deletion</ModalHeader>
+                <ModalBody>
+                    <p>
+                        Are you sure you want to delete the order with invoice number: <strong>{order.orderInvoice}</strong>?
+                        This action cannot be undone.
+                    </p>
+                </ModalBody>
+                <ModalFooter>
+                    <Button color="default" variant="light" onPress={onClose}>
+                        Cancel
+                    </Button>
+                    <Button color="danger" onPress={handleDelete}>
+                        Delete
+                    </Button>
+                </ModalFooter>
             </ModalContent>
         </Modal>
-    )
+    );
 }

@@ -1,87 +1,74 @@
 'use client'
 
-import {useEffect, useState} from "react";
-import {Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Switch} from "@nextui-org/react";
+import { useEffect, useState } from "react";
+import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
 
-interface Product {
+interface Order {
     key: string;
-    productName: string;
-    stock: string;
-    sku: string;
-    availability: string;
-    actions: string;
+    orderInvoice: string;
+    orderStatus: string;
+    date: string;
+    amount: string;
 }
 
 interface EditProductModalProps {
-    product: Product | null;
+    order: Order | null; // Change to Order
     onClose: () => void;
-    onSave: (editedProduct: Product) => void;
+    onSave: (editedOrder: Order) => void; // Change to Order
 }
 
-export default function EditProductModal({product, onClose, onSave}: EditProductModalProps) {
-    const [editedProduct, setEditedProduct] = useState<Product | null>(null);
+export default function EditProductModal({ order, onClose, onSave }: EditProductModalProps) {
+    const [editedOrder, setEditedOrder] = useState<Order | null>(null);
 
     useEffect(() => {
-        if (product) {
-            setEditedProduct({...product});
+        if (order) {
+            setEditedOrder({ ...order });
         }
-    }, [product]);
+    }, [order]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const {name, value} = e.target;
-        setEditedProduct(prev => prev ? {...prev, [name]: value} : null);
-    };
-
-    const handleStockToggle = () => {
-        setEditedProduct(prev => prev ? {
-            ...prev,
-            stock: prev.stock === "In-Stock" ? "Out-of-Stock" : "In-Stock"
-        } : null);
+        const { name, value } = e.target;
+        setEditedOrder(prev => prev ? { ...prev, [name]: value } : null);
     };
 
     const handleSave = () => {
-        if (editedProduct) {
-            onSave(editedProduct);
+        if (editedOrder) {
+            onSave(editedOrder); // Call onSave with editedOrder
         }
         onClose();
     };
 
-    if (!product || !editedProduct) return null;
+    if (!order || !editedOrder) return null;
 
     return (
-        <Modal isOpen={!!product} onClose={onClose}>
+        <Modal isOpen={!!order} onClose={onClose}>
             <ModalContent>
                 {(onClose) => (
                     <>
-                        <ModalHeader className="flex flex-col gap-1">Edit Product</ModalHeader>
+                        <ModalHeader className="flex flex-col gap-1">Edit Order</ModalHeader>
                         <ModalBody>
                             <Input
-                                label="Product Name"
-                                name="productName"
-                                value={editedProduct.productName}
-                                onChange={handleInputChange}
-                            />
-                            <div className="flex items-center space-x-4">
-                                <label>Stock</label>
-                                <Switch
-                                    size="sm"
-                                    color="secondary"
-                                    isSelected={editedProduct.stock === "In-Stock"}
-                                    onValueChange={handleStockToggle}
-                                >
-                                    {editedProduct.stock}
-                                </Switch>
-                            </div>
-                            <Input
-                                label="SKU"
-                                name="sku"
-                                value={editedProduct.sku}
+                                label="Order Invoice"
+                                name="orderInvoice"
+                                value={editedOrder.orderInvoice}
                                 onChange={handleInputChange}
                             />
                             <Input
-                                label="Availability"
-                                name="availability"
-                                value={editedProduct.availability}
+                                label="Order Status"
+                                name="orderStatus"
+                                value={editedOrder.orderStatus}
+                                onChange={handleInputChange}
+                            />
+                            <Input
+                                label="Date"
+                                name="date"
+                                value={editedOrder.date}
+                                onChange={handleInputChange}
+                            />
+                            <Input
+                                label="Amount"
+                                name="amount"
+                                value={editedOrder.amount}
                                 onChange={handleInputChange}
                             />
                         </ModalBody>

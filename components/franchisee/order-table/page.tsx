@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useState, useMemo} from "react";
+import React, {useState, useMemo, Key} from "react";
 import {
     Table,
     TableHeader,
@@ -20,6 +20,9 @@ import {orders as orderData, Order} from "./data";
 import CustomPagination from "@/components/CustomPagination/page";
 import EditProductModal from "@/components/modals/EditProductModal";
 import DeleteProductModal from "@/components/modals/DeleteProductModal";
+import DeleteOrderModal from "@/components/modals/DeleteProductModal";
+
+type ChipColor = "primary" | "warning" | "secondary" | "default" | "danger" | "success";
 
 const columns = [
     {key: "orderInvoice", label: "ORDER INVOICE", sortable: true},
@@ -29,7 +32,7 @@ const columns = [
     {key: "actions", label: "ACTIONS"},
 ];
 
-const statusConfig = {
+const statusConfig: Record<string, { color: ChipColor, variant: string, className: string }> = {
     "queued": {
         color: "primary",
         variant: "solid",
@@ -51,7 +54,7 @@ const statusConfig = {
         className: "bg-[#e4ffe4] text-[#1fac1c]"
     },
     "cancelled": {
-        color: "error",
+        color: "danger",
         variant: "solid",
         className: "bg-[#feebec] text-[#ce292e]"
     }
@@ -59,7 +62,7 @@ const statusConfig = {
 
 export default function OrderHistoryTable() {
     const [orders, setOrders] = useState<Order[]>(orderData);
-    const [selectedKeys, setSelectedKeys] = useState(new Set([]));
+    const [selectedKeys, setSelectedKeys] = useState<Set<Key>>(new Set());
     const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
         direction: "ascending",
     });
@@ -117,12 +120,14 @@ export default function OrderHistoryTable() {
         setEditModalOrder(null);
     };
 
+
     const handleConfirmDelete = (order: Order) => {
         setOrders(prevOrders =>
             prevOrders.filter(o => o.key !== order.key)
         );
         setDeleteModalOrder(null);
     };
+
 
     const renderCell = (order: Order, columnKey: React.Key) => {
         switch (columnKey) {
@@ -190,7 +195,7 @@ export default function OrderHistoryTable() {
                 selectionMode="multiple"
                 radius="xs"
                 selectedKeys={selectedKeys}
-                onSelectionChange={(keys) => setSelectedKeys(keys)}
+                onSelectionChange={(keys: Set<Key>) => setSelectedKeys(keys)}
                 sortDescriptor={sortDescriptor}
                 onSortChange={setSortDescriptor as any}
             >
@@ -228,7 +233,6 @@ export default function OrderHistoryTable() {
                 rowsPerPage={rowsPerPage}
                 totalItems={filteredOrders.length}
                 onPageChange={setPage}
-                filteredItems={filteredOrders}
             />
 
             <EditProductModal
@@ -236,11 +240,13 @@ export default function OrderHistoryTable() {
                 onClose={() => setEditModalOrder(null)}
                 onSave={handleSaveEdit}
             />
-            <DeleteProductModal
+
+            <DeleteOrderModal
                 order={deleteModalOrder}
                 onClose={() => setDeleteModalOrder(null)}
                 onDelete={handleConfirmDelete}
             />
+
         </div>
     );
 }
