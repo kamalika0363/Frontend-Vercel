@@ -1,5 +1,4 @@
-'use client'
-
+"use client";
 import React, {useState, useMemo, Key} from "react";
 import {
     Table,
@@ -11,14 +10,13 @@ import {
     Input,
     Button,
     Chip,
-    SortDescriptor,
+    SortDescriptor
 } from "@nextui-org/react";
 import {ChevronUpIcon, ChevronDownIcon, MinusIcon, PlusIcon} from "@radix-ui/react-icons";
 import {orders, Order} from "./data";
 import CustomPagination from "@/components/CustomPagination/page";
 import CartModal from "@/components/modals/cart-modal";
-
-type ChipColor = "primary" | "warning" | "secondary" | "default" | "danger" | "success";
+import {useSortedFilteredItems} from "@/components/hooks/useSortedFilteredItems";
 
 const columns = [
     {key: "product", label: "PRODUCT", sortable: true},
@@ -28,7 +26,7 @@ const columns = [
     {key: "stockStatus", label: "STOCK STATUS", sortable: true},
 ];
 
-const statusConfig: Record<string, { color: ChipColor, variant: string, className: string }> = {
+const statusConfig: Record<string, { color: string, variant: string, className: string }> = {
     "In-Stock Item": {
         color: "success",
         variant: "solid",
@@ -44,23 +42,21 @@ const statusConfig: Record<string, { color: ChipColor, variant: string, classNam
 export default function PlaceOrderTable() {
     const [orderList, setOrderList] = useState<Order[]>(orders);
     const [selectedKeys, setSelectedKeys] = useState<Set<Key>>(new Set());
-    const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
-        direction: "ascending",
-    });
 
     const [page, setPage] = useState(1);
     const rowsPerPage = 5;
 
     const [productFilter, setProductFilter] = useState("");
     const [skuFilter, setSkuFilter] = useState("");
-    const [selectedOrders, setSelectedOrders] = useState<Order[]>([])
+    const [selectedOrders, setSelectedOrders] = useState<Order[]>([]);
 
     const handleSelectionChange = (keys: Set<Key>) => {
-        setSelectedKeys(keys)
-        const selected = orderList.filter(order => keys.has(order.key) && order.stockStatus !== "Out of Stock")
-        setSelectedKeys(new Set(selected.map(order => order.key)))
-        setSelectedOrders(selected)
-    }
+        setSelectedKeys(keys);
+        const selected = orderList.filter(order => keys.has(order.key) && order.stockStatus !== "Out of Stock");
+        setSelectedKeys(new Set(selected.map(order => order.key)));
+        setSelectedOrders(selected);
+    };
+
     const handleQuantityChange = (key: string, increment: boolean) => {
         setOrderList(prevOrders =>
             prevOrders.map(order => {
@@ -82,37 +78,24 @@ export default function PlaceOrderTable() {
                     : order
             )
         );
-
-        if (selectedKeys.has(key)) {
-            setSelectedOrders(prevSelected =>
-                prevSelected.map(order =>
-                    order.key === key
-                        ? {...order, quantity: increment ? order.quantity + 1 : Math.max(0, order.quantity - 1)}
-                        : order
-                )
-            )
-        }
     };
 
-    const filteredOrders = useMemo(() => {
-        return orderList.filter((order) => {
-            return (
-                order.product.toLowerCase().includes(productFilter.toLowerCase()) &&
-                order.sku.toLowerCase().includes(skuFilter.toLowerCase())
-            );
-        });
-    }, [orderList, productFilter, skuFilter]);
+    const filters = {
+        product: productFilter,
+        sku: skuFilter
+    };
 
-    // TODO: Move it to components folder
-    const sortedItems = useMemo(() => {
-        return [...filteredOrders].sort((a, b) => {
-            const first = a[sortDescriptor.column as keyof Order];
-            const second = b[sortDescriptor.column as keyof Order];
-            const cmp = first < second ? -1 : first > second ? 1 : 0;
+    const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
+        column: "product",
+        direction: "ascending",
+    });
 
-            return sortDescriptor.direction === "descending" ? -cmp : cmp;
-        });
-    }, [filteredOrders, sortDescriptor]);
+    const sortedItems = useSortedFilteredItems(
+        orderList,
+        filters,
+        sortDescriptor,
+        ["product", "sku"]
+    );
 
     const pages = Math.ceil(sortedItems.length / rowsPerPage);
 
@@ -156,7 +139,6 @@ export default function PlaceOrderTable() {
                     <Chip
                         className={config.className}
                         size="sm"
-                        color={config.color}
                     >
                         {order.stockStatus}
                     </Chip>
@@ -199,7 +181,7 @@ export default function PlaceOrderTable() {
                             {column.label}
                             {column.sortable && column.key === sortDescriptor.column && (
                                 sortDescriptor.direction === "ascending" ? (
-                                    <ChevronUpIcon className="inline ml-1"/>
+                                    <ChevronUpIcon className="hidden ml-1"/>
                                 ) : (
                                     <ChevronDownIcon className="inline ml-1"/>
                                 )
@@ -224,7 +206,7 @@ export default function PlaceOrderTable() {
                 page={page}
                 pages={pages}
                 rowsPerPage={rowsPerPage}
-                totalItems={filteredOrders.length}
+                totalItems={sortedItems.length}
                 onPageChange={setPage}
             />
 

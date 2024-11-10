@@ -1,40 +1,29 @@
 'use client'
 
-import React, { useState, useMemo } from "react";
-import {
-    Table,
-    TableHeader,
-    TableColumn,
-    TableBody,
-    TableRow,
-    TableCell,
-    Input,
-    Button,
-    Switch,
-    SortDescriptor
-} from "@nextui-org/react";
-import { Pencil1Icon, TrashIcon, ChevronUpIcon, ChevronDownIcon } from "@radix-ui/react-icons";
-
-import { products as productData, Product } from "./data";
+import React, {useState, useMemo, Key} from "react";
+import {Input, Button, Switch, SortDescriptor} from "@nextui-org/react";
+import {Pencil1Icon, TrashIcon} from "@radix-ui/react-icons";
+import {products as productData, Product} from "./data";
 import EditProductModal from "@/components/modals/EditProductModal";
 import DeleteProductModal from "@/components/modals/DeleteProductModal";
 import CustomPagination from "@/components/CustomPagination/page";
+import ReusableTable from "@/components/table/reusable-table";
 
 const columns = [
-    { key: "productName", label: "PRODUCT NAME", sortable: true },
-    { key: "stock", label: "STOCK", sortable: true },
-    { key: "sku", label: "SKU", sortable: true },
-    { key: "availability", label: "AVAILABILITY", sortable: true },
-    { key: "actions", label: "ACTIONS" },
+    {key: "productName", label: "PRODUCT NAME", sortable: true},
+    {key: "stock", label: "STOCK", sortable: true},
+    {key: "sku", label: "SKU", sortable: true},
+    {key: "availability", label: "AVAILABILITY", sortable: true},
+    {key: "actions", label: "ACTIONS"},
 ];
 
 export default function ActiveProductsTable() {
     const [products, setProducts] = useState<Product[]>(productData);
-    const [selectedKeys, setSelectedKeys] = useState(new Set([]));
+    const [selectedKeys, setSelectedKeys] = useState<Set<Key>>(new Set());
     const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
-        direction: "ascending",
+        column: 'productName',
+        direction: 'ascending',
     });
-
     const [page, setPage] = useState(1);
     const rowsPerPage = 5;
 
@@ -47,8 +36,8 @@ export default function ActiveProductsTable() {
     const filteredProducts = useMemo(() => {
         return products.filter((product) => {
             return (
-                product.productName.toLowerCase().includes(nameFilter.toLowerCase()) &&
-                product.sku.toLowerCase().includes(skuFilter.toLowerCase())
+                (product.productName?.toLowerCase().includes(nameFilter.toLowerCase()) || '') &&
+                (product.sku?.toLowerCase().includes(skuFilter.toLowerCase()) || '')
             );
         });
     }, [products, nameFilter, skuFilter]);
@@ -64,7 +53,6 @@ export default function ActiveProductsTable() {
     }, [filteredProducts, sortDescriptor]);
 
     const pages = Math.ceil(sortedItems.length / rowsPerPage);
-
     const items = useMemo(() => {
         const start = (page - 1) * rowsPerPage;
         const end = start + rowsPerPage;
@@ -82,7 +70,7 @@ export default function ActiveProductsTable() {
     const handleSaveEdit = (editedProduct: Product) => {
         setProducts(prevProducts =>
             prevProducts.map(product =>
-                product.key === editedProduct.key ? editedProduct : product
+                product.sku === editedProduct.sku ? editedProduct : product
             )
         );
         setEditModalProduct(null);
@@ -90,16 +78,20 @@ export default function ActiveProductsTable() {
 
     const handleConfirmDelete = (product: Product) => {
         setProducts(prevProducts =>
-            prevProducts.filter(p => p.key !== product.key)
+            prevProducts.filter(p => p.sku !== product.sku)
         );
         setDeleteModalProduct(null);
+    };
+
+    const handleSelectionChange = (keys: Set<Key>) => {
+        setSelectedKeys(keys);
     };
 
     const handleStockToggle = (product: Product) => {
         setProducts(prevProducts =>
             prevProducts.map(p =>
-                p.key === product.key
-                    ? { ...p, stock: p.stock === "In-Stock" ? "Out-of-Stock" : "In-Stock" }
+                p.sku === product.sku
+                    ? {...p, stock: p.stock === "In-Stock" ? "Out-of-Stock" : "In-Stock"}
                     : p
             )
         );
@@ -116,7 +108,7 @@ export default function ActiveProductsTable() {
                             onClick={() => handleEdit(product)}
                             className="bg-[#e6f6eb] text-[#1e8255] border-[#1e8255]"
                         >
-                            <Pencil1Icon className="h-4 w-4" />
+                            <Pencil1Icon className="h-4 w-4"/>
                         </Button>
                         <Button
                             isIconOnly
@@ -124,7 +116,7 @@ export default function ActiveProductsTable() {
                             onClick={() => handleDelete(product)}
                             className="bg-[#feebec] text-[#ce292e] border-[#ce292e]"
                         >
-                            <TrashIcon className="h-4 w-4" />
+                            <TrashIcon className="h-4 w-4"/>
                         </Button>
                     </div>
                 );
@@ -158,41 +150,16 @@ export default function ActiveProductsTable() {
                     onChange={(e) => setSkuFilter(e.target.value)}
                 />
             </div>
-            <Table
-                aria-label="Product information table with pagination"
-                selectionMode="multiple"
+
+            <ReusableTable
+                columns={columns}
+                items={items}
                 selectedKeys={selectedKeys}
-                onSelectionChange={(keys) => setSelectedKeys(keys)}
+                handleSelectionChange={handleSelectionChange}
                 sortDescriptor={sortDescriptor}
-                onSortChange={setSortDescriptor as any}
-            >
-                <TableHeader columns={columns}>
-                    {(column) => (
-                        <TableColumn
-                            key={column.key}
-                            allowsSorting={column.sortable}
-                        >
-                            {column.label}
-                            {column.sortable && column.key === sortDescriptor.column && (
-                                sortDescriptor.direction === "ascending" ? (
-                                    <ChevronUpIcon className="inline ml-1" />
-                                ) : (
-                                    <ChevronDownIcon className="inline ml-1" />
-                                )
-                            )}
-                        </TableColumn>
-                    )}
-                </TableHeader>
-                <TableBody items={items}>
-                    {(item) => (
-                        <TableRow key={item.key}>
-                            {(columnKey) => (
-                                <TableCell>{renderCell(item, columnKey)}</TableCell>
-                            )}
-                        </TableRow>
-                    )}
-                </TableBody>
-            </Table>
+                setSortDescriptor={setSortDescriptor}
+                renderCell={renderCell}
+            />
 
             <CustomPagination
                 page={page}
@@ -206,12 +173,12 @@ export default function ActiveProductsTable() {
             <EditProductModal
                 product={editModalProduct}
                 onClose={() => setEditModalProduct(null)}
-                onSave={handleSaveEdit}
+                order={editModalProduct}
             />
             <DeleteProductModal
                 product={deleteModalProduct}
                 onClose={() => setDeleteModalProduct(null)}
-                onDelete={handleConfirmDelete}
+                order={deleteModalProduct}
             />
         </div>
     );

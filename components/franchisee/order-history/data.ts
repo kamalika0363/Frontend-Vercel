@@ -1,5 +1,5 @@
 export interface Order {
-    key: string;
+    key: any;
     orderInvoice: string;
     orderStatus: string;
     date: string;

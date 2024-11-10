@@ -1,6 +1,6 @@
 "use client";
 
-import ActiveProductsTable from "@/components/franchisor/active-products/page";
+import ActiveProductsTable from "@/components/franchiser/active-products/page";
 
 export default function ActiveProducts() {
     return (

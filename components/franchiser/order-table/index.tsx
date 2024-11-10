@@ -16,7 +16,7 @@ import {
     DropdownItem, User
 } from "@nextui-org/react"
 import {columns, users} from "./data"
-import {formatDate} from "./utils"
+import {formatDate} from "@/lib/utils";
 import {ChevronDown} from "lucide-react"
 import type {SortDescriptor} from "@nextui-org/table"
 import CustomPagination from "@/components/CustomPagination/page";

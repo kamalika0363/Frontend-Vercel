@@ -9,16 +9,16 @@ import {
     TableRow,
     TableCell,
     Input,
-    Button,
     Chip,
     SortDescriptor
 } from "@nextui-org/react";
-import {Pencil1Icon, TrashIcon, ChevronUpIcon, ChevronDownIcon} from "@radix-ui/react-icons";
+import {ChevronUpIcon, ChevronDownIcon} from "@radix-ui/react-icons";
 
 // TODO: API Integration
 import {orders as orderData, Order} from "./data";
 
 import CustomPagination from "@/components/CustomPagination/page";
+import { useSortedFilteredItems } from "@/components/hooks/useSortedFilteredItems";
 
 type ChipColor = "primary" | "warning" | "secondary" | "default" | "danger" | "success";
 
@@ -59,7 +59,7 @@ const statusConfig: Record<string, { color: ChipColor, variant: string, classNam
 };
 
 export default function OrderHistoryTable() {
-    const [orders, setOrders] = useState<Order[]>(orderData);
+    const [orders] = useState<Order[]>(orderData);
     const [selectedKeys, setSelectedKeys] = useState<Set<Key>>(new Set());
     const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
         direction: "ascending",
@@ -71,27 +71,12 @@ export default function OrderHistoryTable() {
     const [invoiceFilter, setInvoiceFilter] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
 
-    const [editModalOrder, setEditModalOrder] = useState<Order | null>(null);
-    const [deleteModalOrder, setDeleteModalOrder] = useState<Order | null>(null);
+    const filters = {
+        orderInvoice: invoiceFilter,
+        orderStatus: statusFilter,
+    };
 
-    const filteredOrders = useMemo(() => {
-        return orders.filter((order) => {
-            return (
-                order.orderInvoice.toLowerCase().includes(invoiceFilter.toLowerCase()) &&
-                order.orderStatus.toLowerCase().includes(statusFilter.toLowerCase())
-            );
-        });
-    }, [orders, invoiceFilter, statusFilter]);
-
-    const sortedItems = useMemo(() => {
-        return [...filteredOrders].sort((a, b) => {
-            const first = a[sortDescriptor.column as keyof Order];
-            const second = b[sortDescriptor.column as keyof Order];
-            const cmp = first < second ? -1 : first > second ? 1 : 0;
-
-            return sortDescriptor.direction === "descending" ? -cmp : cmp;
-        });
-    }, [filteredOrders, sortDescriptor]);
+    const sortedItems = useSortedFilteredItems(orders, filters, sortDescriptor, ["orderInvoice", "orderStatus"]);
 
     const pages = Math.ceil(sortedItems.length / rowsPerPage);
 
@@ -101,55 +86,9 @@ export default function OrderHistoryTable() {
         return sortedItems.slice(start, end);
     }, [page, sortedItems]);
 
-    const handleEdit = (order: Order) => {
-        setEditModalOrder(order);
-    };
-
-    const handleDelete = (order: Order) => {
-        setDeleteModalOrder(order);
-    };
-
-    const handleSaveEdit = (editedOrder: Order) => {
-        setOrders(prevOrders =>
-            prevOrders.map(order =>
-                order.key === editedOrder.key ? editedOrder : order
-            )
-        );
-        setEditModalOrder(null);
-    };
-
-
-    const handleConfirmDelete = (order: Order) => {
-        setOrders(prevOrders =>
-            prevOrders.filter(o => o.key !== order.key)
-        );
-        setDeleteModalOrder(null);
-    };
-
 
     const renderCell = (order: Order, columnKey: React.Key) => {
         switch (columnKey) {
-            case "actions":
-                return (
-                    <div className="flex space-x-2">
-                        <Button
-                            isIconOnly
-                            aria-label="Edit"
-                            onClick={() => handleEdit(order)}
-                            className="bg-[#e6f6eb] text-[#1e8255] border-[#1e8255]"
-                        >
-                            <Pencil1Icon className="h-4 w-4"/>
-                        </Button>
-                        <Button
-                            isIconOnly
-                            aria-label="Delete"
-                            onClick={() => handleDelete(order)}
-                            className="bg-[#feebec] text-[#ce292e] border-[#ce292e]"
-                        >
-                            <TrashIcon className="h-4 w-4"/>
-                        </Button>
-                    </div>
-                );
             case "orderStatus":
                 const status = order.orderStatus.toLowerCase();
                 const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.queued;
@@ -229,7 +168,7 @@ export default function OrderHistoryTable() {
                 page={page}
                 pages={pages}
                 rowsPerPage={rowsPerPage}
-                totalItems={filteredOrders.length}
+                totalItems={sortedItems.length}
                 onPageChange={setPage}
             />
 

@@ -1,6 +1,6 @@
 "use client";
 
-import FranchiseInfoTable from "@/components/franchisor/franchise-info/page";
+import FranchiseInfoTable from "@/components/franchiser/franchise-info/page";
 
 export default function FranchiseInfo() {
     return (

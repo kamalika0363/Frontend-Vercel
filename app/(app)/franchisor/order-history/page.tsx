@@ -1,4 +1,4 @@
-import OrderHistoryTable from "@/components/franchisor/order-history/page";
+import OrderHistoryTable from "@/components/franchiser/order-history/page";
 
 export default function OrderHistory() {
     return (

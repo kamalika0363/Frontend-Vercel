@@ -12,9 +12,9 @@ interface Order {
 }
 
 interface EditProductModalProps {
-    order: Order | null; // Change to Order
+    order: Order | null;
     onClose: () => void;
-    onSave: (editedOrder: Order) => void; // Change to Order
+    onSave: (editedOrder: Order) => void;
 }
 
 export default function EditProductModal({ order, onClose, onSave }: EditProductModalProps) {
@@ -33,7 +33,7 @@ export default function EditProductModal({ order, onClose, onSave }: EditProduct
 
     const handleSave = () => {
         if (editedOrder) {
-            onSave(editedOrder); // Call onSave with editedOrder
+            onSave(editedOrder);
         }
         onClose();
     };
