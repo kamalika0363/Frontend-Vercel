@@ -12,30 +12,45 @@ import {
     Button,
     Chip,
     SortDescriptor,
-    Pagination
 } from "@nextui-org/react";
-import {ChevronUpIcon, ChevronDownIcon, MinusIcon, PlusIcon} from "@radix-ui/react-icons";
-import {orders, OrderHistory} from "./data";
+import {ChevronUpIcon, ChevronDownIcon, Pencil1Icon, TrashIcon} from "@radix-ui/react-icons";
+import {orders, Order} from "./data";
 import CustomPagination from "@/components/CustomPagination/page";
-import {ArrowBigRight} from "lucide-react";
+import EditProductModal from "@/components/modals/EditProductModal";
+import DeleteProductModal from "@/components/modals/DeleteProductModal";
 
 type ChipColor = "primary" | "warning" | "secondary" | "default" | "danger" | "success";
 
 const columns = [
-    {key: "product", label: "PRODUCT", sortable: true},
-    {key: "quantity", label: "QUANTITY", sortable: true},
-    {key: "sku", label: "SKU", sortable: true},
-    {key: "pricePerUnit", label: "PRICE PER UNIT", sortable: true},
-    {key: "stockStatus", label: "STOCK STATUS", sortable: true},
+    {key: "orderInvoice", label: "ORDER INVOICE", sortable: true},
+    {key: "orderStatus", label: "ORDER STATUS", sortable: true},
+    {key: "date", label: "DATE", sortable: true},
+    {key: "amount", label: "AMOUNT", sortable: true},
+    {key: "actions", label: "ACTIONS"},
 ];
 
 const statusConfig: Record<string, { color: ChipColor, variant: string, className: string }> = {
-    "In-Stock Item": {
+    "Queued": {
+        color: "warning",
+        variant: "solid",
+        className: "bg-[#fff4e5] text-[#ff9800]"
+    },
+    "Shipped": {
+        color: "primary",
+        variant: "solid",
+        className: "bg-[#e3f2fd] text-[#2196f3]"
+    },
+    "Delivered": {
         color: "success",
         variant: "solid",
-        className: "bg-[#e4ffe4] text-[#1fac1c]"
+        className: "bg-[#e8f5e9] text-[#4caf50]"
     },
-    "Out of Stock": {
+    "Processing": {
+        color: "secondary",
+        variant: "solid",
+        className: "bg-[#ede7f6] text-[#673ab7]"
+    },
+    "Cancelled": {
         color: "danger",
         variant: "solid",
         className: "bg-[#feebec] text-[#ce292e]"
@@ -43,7 +58,7 @@ const statusConfig: Record<string, { color: ChipColor, variant: string, classNam
 };
 
 export default function OrderHistoryTable() {
-    const [orderList, setOrderList] = useState<OrderHistory[]>(orders);
+    const [orderList, setOrderList] = useState<Order[]>(orders);
     const [selectedKeys, setSelectedKeys] = useState<Set<Key>>(new Set());
     const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
         direction: "ascending",
@@ -52,34 +67,55 @@ export default function OrderHistoryTable() {
     const [page, setPage] = useState(1);
     const rowsPerPage = 5;
 
-    const [productFilter, setProductFilter] = useState("");
-    const [skuFilter, setSkuFilter] = useState("");
+    const [invoiceFilter, setInvoiceFilter] = useState("");
+    const [statusFilter, setStatusFilter] = useState("");
 
-    const handleQuantityChange = (key: string, increment: boolean) => {
+    // State for edit and delete modals
+    const [editModalOrder, setEditModalOrder] = useState<Order | null>(null);
+    const [deleteModalOrder, setDeleteModalOrder] = useState<Order | null>(null);
+
+    const handleSelectionChange = (keys: Set<Key>) => {
+        setSelectedKeys(keys);
+    };
+
+    // Handlers for edit and delete actions
+    const handleEdit = (order: Order) => {
+        setEditModalOrder(order);
+    };
+
+    const handleDelete = (order: Order) => {
+        setDeleteModalOrder(order);
+    };
+
+    const handleSaveEdit = (editedOrder: Order) => {
         setOrderList(prevOrders =>
-            prevOrders.map(order => {
-                if (order.key === key) {
-                    const newQuantity = increment ? order.quantity + 1 : Math.max(0, order.quantity - 1);
-                    return {...order, quantity: newQuantity};
-                }
-                return order;
-            })
+            prevOrders.map(order =>
+                order.key === editedOrder.key ? editedOrder : order
+            )
         );
+        setEditModalOrder(null);
+    };
+
+    const handleConfirmDelete = (order: Order) => {
+        setOrderList(prevOrders =>
+            prevOrders.filter(o => o.key !== order.key)
+        );
+        setDeleteModalOrder(null);
     };
 
     const filteredOrders = useMemo(() => {
         return orderList.filter((order) => {
             return (
-                order.product.toLowerCase().includes(productFilter.toLowerCase()) &&
-                order.sku.toLowerCase().includes(skuFilter.toLowerCase())
+                order.orderInvoice.toLowerCase().includes(invoiceFilter.toLowerCase()) &&
+                order.orderStatus.toLowerCase().includes(statusFilter.toLowerCase())
             );
         });
-    }, [orderList, productFilter, skuFilter]);
+    }, [orderList, invoiceFilter, statusFilter]);
 
     const sortedItems = useMemo(() => {
         return [...filteredOrders].sort((a, b) => {
-            const first = a[sortDescriptor.column as keyof OrderHistory];
-            const second = b[sortDescriptor.column as keyof OrderHistory];
+            const first = a[sortDescriptor.column as keyof Order];
+            const second = b[sortDescriptor.column as keyof Order];
             const cmp = first < second ? -1 : first > second ? 1 : 0;
 
             return sortDescriptor.direction === "descending" ? -cmp : cmp;
@@ -94,47 +130,49 @@ export default function OrderHistoryTable() {
         return sortedItems.slice(start, end);
     }, [page, sortedItems]);
 
-    const renderCell = (order: OrderHistory, columnKey: React.Key) => {
+    const renderCell = (order: Order, columnKey: React.Key) => {
         switch (columnKey) {
-            case "quantity":
-                return (
-                    <div className="flex items-center gap-2">
-                        <Button
-                            isIconOnly
-                            size="sm"
-                            radius="sm"
-                            variant="light"
-                            onClick={() => handleQuantityChange(order.key, false)}
-                            className="min-w-6 w-6 h-6 border border-default-200"
-                        >
-                            <MinusIcon className="w-4 h-4"/>
-                        </Button>
-                        <span className="w-8 text-center">{order.quantity}</span>
-                        <Button
-                            isIconOnly
-                            size="sm"
-                            radius="sm"
-                            variant="light"
-                            onClick={() => handleQuantityChange(order.key, true)}
-                            className="min-w-6 w-6 h-6 border border-default-200"
-                        >
-                            <PlusIcon className="w-4 h-4"/>
-                        </Button>
-                    </div>
-                );
-            case "stockStatus":
-                const config = statusConfig[order.stockStatus] || statusConfig["In-Stock Item"];
+            case "orderStatus":
+                const config = statusConfig[order.orderStatus];
                 return (
                     <Chip
                         className={config.className}
                         size="sm"
                         color={config.color}
                     >
-                        {order.stockStatus}
+                        {order.orderStatus}
                     </Chip>
                 );
+            case "actions":
+                return (
+                    <div className="flex space-x-2">
+                        <Button
+                            isIconOnly
+                            aria-label="Edit"
+                            onClick={() => handleEdit(order)}
+                            className="bg-[#e6f6eb] text-[#1e8255] border-[#1e8255]"
+                        >
+                            <Pencil1Icon className="h-4 w-4"/>
+                        </Button>
+                        <Button
+                            isIconOnly
+                            aria-label="Delete"
+                            onClick={() => handleDelete(order)}
+                            className="bg-[#feebec] text-[#ce292e] border-[#ce292e]"
+                        >
+                            <TrashIcon className="h-4 w-4"/>
+                        </Button>
+                    </div>
+                );
+            case "amount":
+                return (
+                    <div className="flex flex-col">
+                        <span>{order.amount}</span>
+                        <span className="text-xs text-gray-500">Paid on {order.date}</span>
+                    </div>
+                );
             default:
-                return order[columnKey as keyof OrderHistory];
+                return order[columnKey as keyof Order];
         }
     };
 
@@ -142,23 +180,23 @@ export default function OrderHistoryTable() {
         <div className="flex flex-col gap-3">
             <div className="flex space-x-4 mb-4">
                 <Input
-                    placeholder="Search by Product"
-                    value={productFilter}
-                    onChange={(e) => setProductFilter(e.target.value)}
-                    aria-label="Search by Product"
+                    placeholder="Search by Invoice"
+                    value={invoiceFilter}
+                    onChange={(e) => setInvoiceFilter(e.target.value)}
+                    aria-label="Search by Invoice"
                 />
                 <Input
-                    placeholder="Search by SKU"
-                    value={skuFilter}
-                    onChange={(e) => setSkuFilter(e.target.value)}
-                    aria-label="Search by SKU"
+                    placeholder="Search by Status"
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    aria-label="Search by Status"
                 />
             </div>
             <Table
-                aria-label="Order information table with pagination"
+                aria-label="Order history table with pagination"
                 selectionMode="multiple"
                 selectedKeys={selectedKeys}
-                onSelectionChange={(keys: Set<Key>) => setSelectedKeys(keys)}
+                onSelectionChange={handleSelectionChange}
                 sortDescriptor={sortDescriptor}
                 onSortChange={setSortDescriptor as any}
             >
@@ -189,6 +227,17 @@ export default function OrderHistoryTable() {
                     )}
                 </TableBody>
             </Table>
+
+            <EditProductModal
+                order={editModalOrder}
+                onClose={() => setEditModalOrder(null)}
+                onSave={handleSaveEdit}
+            />
+            <DeleteProductModal
+                order={deleteModalOrder}
+                onClose={() => setDeleteModalOrder(null)}
+                onDelete={handleConfirmDelete}
+            />
 
             <CustomPagination
                 page={page}
