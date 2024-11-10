@@ -13,7 +13,7 @@ import {Button} from "@nextui-org/react";
 export const SidebarWrapper = () => {
     const pathname = usePathname();
     const {collapsed, setCollapsed} = useSidebarContext();
-    const isFranchisor = pathname.startsWith('/franchisee');
+    const isFranchiser = pathname.startsWith('/franchisee');
 
     return (
         <aside className="h-screen z-[20] sticky top-0">
@@ -31,7 +31,7 @@ export const SidebarWrapper = () => {
                 <div className="flex flex-col justify-between h-full">
                     <div className={Sidebar.Body()}>
                         <SidebarMenu title="Main Menu">
-                            {isFranchisor ? (
+                            {isFranchiser ? (
                                 <>
                                     <SidebarItem
                                         isActive={pathname === "/franchisee/orders"}
@@ -55,25 +55,25 @@ export const SidebarWrapper = () => {
                                         isActive={pathname === "/orders"}
                                         title="Orders"
                                         icon={<CubeIcon/>}
-                                        href="/franchisor/orders"
+                                        href="/franchiser/orders"
                                     />
                                     <SidebarItem
                                         isActive={pathname === "/order-history"}
                                         title="Orders History"
                                         icon={<ClipboardIcon/>}
-                                        href="/franchisor/order-history"
+                                        href="/franchiser/order-history"
                                     />
                                     <SidebarItem
                                         isActive={pathname === "/franchise-info"}
                                         title="Franchise Information"
                                         icon={<PersonIcon/>}
-                                        href="/franchisor/franchise-info"
+                                        href="/franchiser/franchise-info"
                                     />
                                     <SidebarItem
                                         isActive={pathname === "/active-products"}
                                         title="Active Products"
                                         icon={<CodeSandboxLogoIcon/>}
-                                        href="/franchisor/active-products"
+                                        href="/franchiser/active-products"
                                     />
                                 </>
                             )}

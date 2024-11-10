@@ -1,26 +1,25 @@
 'use client'
 
-import React, {useState, useMemo, Key} from "react";
+import React, {useState, useMemo, useCallback, Key} from "react";
 import {
-    Table,
-    TableHeader,
-    TableColumn,
-    TableBody,
-    TableRow,
-    TableCell,
     Input,
     Button,
     Chip,
     SortDescriptor,
 } from "@nextui-org/react";
-import {ChevronUpIcon, ChevronDownIcon, Pencil1Icon, TrashIcon} from "@radix-ui/react-icons";
+import {Pencil1Icon, TrashIcon} from "@radix-ui/react-icons";
 import {orderHistories, OrderHistory} from "./data";
 import CustomPagination from "@/components/CustomPagination/page";
 import EditProductModal from "@/components/modals/EditProductModal";
 import DeleteProductModal from "@/components/modals/DeleteProductModal";
+import ReusableTable from "@/components/table/reusable-table";
+import {Order} from "@/components/franchisee/order-history/data";
 
 type ChipColor = "primary" | "warning" | "secondary" | "default" | "danger" | "success";
-
+type CustomSortDescriptor = {
+    column: string;
+    direction: "ascending" | "descending";
+};
 const columns = [
     {key: "location", label: "LOCATION", sortable: true},
     {key: "orderId", label: "ORDER ID", sortable: true},
@@ -56,7 +55,8 @@ const statusConfig: Record<string, { color: ChipColor, variant: string, classNam
 export default function OrderHistoryTable() {
     const [orderList, setOrderList] = useState<OrderHistory[]>(orderHistories);
     const [selectedKeys, setSelectedKeys] = useState<Set<Key>>(new Set());
-    const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
+    const [sortDescriptor, setSortDescriptor] = useState<CustomSortDescriptor>({
+        column: "orderId",
         direction: "ascending",
     });
 
@@ -66,8 +66,8 @@ export default function OrderHistoryTable() {
     const [locationFilter, setLocationFilter] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
 
-    const [editModalOrder, setEditModalOrder] = useState<OrderHistory | null>(null);
-    const [deleteModalOrder, setDeleteModalOrder] = useState<OrderHistory | null>(null);
+    const [editModalOrder, setEditModalOrder] = useState<Order | null>(null);
+    const [deleteModalOrder, setDeleteModalOrder] = useState<Order | null>(null);
 
     const handleSelectionChange = (keys: Set<Key>) => {
         setSelectedKeys(keys);
@@ -81,18 +81,18 @@ export default function OrderHistoryTable() {
         setDeleteModalOrder(order);
     };
 
-    const handleSaveEdit = (editedOrder: OrderHistory) => {
-        setOrderList(prevOrders =>
-            prevOrders.map(order =>
+    const handleSaveEdit = (editedOrder: Order) => {
+        setOrderList((prevOrders) =>
+            prevOrders.map((order) =>
                 order.key === editedOrder.key ? editedOrder : order
             )
         );
         setEditModalOrder(null);
     };
 
-    const handleConfirmDelete = (order: OrderHistory) => {
-        setOrderList(prevOrders =>
-            prevOrders.filter(o => o.key !== order.key)
+    const handleConfirmDelete = (order: Order) => {
+        setOrderList((prevOrders) =>
+            prevOrders.filter((o) => o.key !== order.key)
         );
         setDeleteModalOrder(null);
     };
@@ -124,7 +124,7 @@ export default function OrderHistoryTable() {
         return sortedItems.slice(start, end);
     }, [page, sortedItems]);
 
-    const renderCell = (order: OrderHistory, columnKey: React.Key) => {
+    const renderCell = useCallback((order: OrderHistory, columnKey: React.Key) => {
         switch (columnKey) {
             case "orderStatus":
                 const config = statusConfig[order.orderStatus] || statusConfig["Default"];
@@ -161,7 +161,7 @@ export default function OrderHistoryTable() {
             default:
                 return order[columnKey as keyof OrderHistory];
         }
-    };
+    }, [handleEdit, handleDelete]);
 
     return (
         <div className="flex flex-col gap-3">
@@ -179,41 +179,15 @@ export default function OrderHistoryTable() {
                     aria-label="Search by Status"
                 />
             </div>
-            <Table
-                aria-label="Order history table with pagination"
-                selectionMode="multiple"
+            <ReusableTable
+                columns={columns}
+                items={items}
                 selectedKeys={selectedKeys}
-                onSelectionChange={handleSelectionChange}
+                handleSelectionChange={handleSelectionChange}
                 sortDescriptor={sortDescriptor}
-                onSortChange={setSortDescriptor as any}
-            >
-                <TableHeader columns={columns}>
-                    {(column) => (
-                        <TableColumn
-                            key={column.key}
-                            allowsSorting={column.sortable}
-                        >
-                            {column.label}
-                            {column.sortable && column.key === sortDescriptor.column && (
-                                sortDescriptor.direction === "ascending" ? (
-                                    <ChevronUpIcon className="inline ml-1"/>
-                                ) : (
-                                    <ChevronDownIcon className="inline ml-1"/>
-                                )
-                            )}
-                        </TableColumn>
-                    )}
-                </TableHeader>
-                <TableBody items={items}>
-                    {(item) => (
-                        <TableRow key={item.key}>
-                            {(columnKey) => (
-                                <TableCell>{renderCell(item, columnKey)}</TableCell>
-                            )}
-                        </TableRow>
-                    )}
-                </TableBody>
-            </Table>
+                setSortDescriptor={setSortDescriptor}
+                renderCell={renderCell}
+            />
 
             <EditProductModal
                 order={editModalOrder}

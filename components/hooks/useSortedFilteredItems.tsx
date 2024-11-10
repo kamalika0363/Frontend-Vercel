@@ -6,9 +6,9 @@ interface SortDescriptor {
 }
 
 export function useSortedFilteredItems<T extends Record<string, any>>(
-    items: T[],
+    items: Order[],
     filters: Record<string, string>,
-    sortDescriptor: SortDescriptor,
+    sortDescriptor,
     filterColumns: string[]
 ) {
     const filteredItems = useMemo(() => {

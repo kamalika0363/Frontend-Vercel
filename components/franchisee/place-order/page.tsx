@@ -90,12 +90,7 @@ export default function PlaceOrderTable() {
         direction: "ascending",
     });
 
-    const sortedItems = useSortedFilteredItems(
-        orderList,
-        filters,
-        sortDescriptor,
-        ["product", "sku"]
-    );
+    const sortedItems = useSortedFilteredItems(orderList, filters, sortDescriptor, ["product", "sku"]);
 
     const pages = Math.ceil(sortedItems.length / rowsPerPage);
 

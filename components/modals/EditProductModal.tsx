@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useState } from "react";
-import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
+import {useEffect, useState} from "react";
+import {Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader} from "@nextui-org/react";
 
 interface Order {
     key: string;
@@ -17,25 +17,25 @@ interface EditProductModalProps {
     onSave: (editedOrder: Order) => void;
 }
 
-export default function EditProductModal({ order, onClose, onSave }: EditProductModalProps) {
+export default function EditProductModal({order, onClose, onSave}: EditProductModalProps) {
     const [editedOrder, setEditedOrder] = useState<Order | null>(null);
 
     useEffect(() => {
         if (order) {
-            setEditedOrder({ ...order });
+            setEditedOrder({...order});
         }
     }, [order]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setEditedOrder(prev => prev ? { ...prev, [name]: value } : null);
+        const {name, value} = e.target;
+        setEditedOrder(prev => prev ? {...prev, [name]: value} : null);
     };
 
     const handleSave = () => {
         if (editedOrder) {
-            onSave(editedOrder);
+            onSave(editedOrder); // Save edited order to the parent
         }
-        onClose();
+        onClose(); // Close the modal
     };
 
     if (!order || !editedOrder) return null;
@@ -43,45 +43,37 @@ export default function EditProductModal({ order, onClose, onSave }: EditProduct
     return (
         <Modal isOpen={!!order} onClose={onClose}>
             <ModalContent>
-                {(onClose) => (
-                    <>
-                        <ModalHeader className="flex flex-col gap-1">Edit Order</ModalHeader>
-                        <ModalBody>
-                            <Input
-                                label="Order Invoice"
-                                name="orderInvoice"
-                                value={editedOrder.orderInvoice}
-                                onChange={handleInputChange}
-                            />
-                            <Input
-                                label="Order Status"
-                                name="orderStatus"
-                                value={editedOrder.orderStatus}
-                                onChange={handleInputChange}
-                            />
-                            <Input
-                                label="Date"
-                                name="date"
-                                value={editedOrder.date}
-                                onChange={handleInputChange}
-                            />
-                            <Input
-                                label="Amount"
-                                name="amount"
-                                value={editedOrder.amount}
-                                onChange={handleInputChange}
-                            />
-                        </ModalBody>
-                        <ModalFooter>
-                            <Button color='danger' variant="light" onPress={onClose}>
-                                Cancel
-                            </Button>
-                            <Button color="primary" onClick={handleSave}>
-                                Save
-                            </Button>
-                        </ModalFooter>
-                    </>
-                )}
+                <ModalHeader className="flex flex-col gap-1">Edit Order</ModalHeader>
+                <ModalBody>
+                    <Input
+                        label="Order Invoice"
+                        name="orderInvoice"
+                        value={editedOrder.orderInvoice}
+                        onChange={handleInputChange}
+                    />
+                    <Input
+                        label="Order Status"
+                        name="orderStatus"
+                        value={editedOrder.orderStatus}
+                        onChange={handleInputChange}
+                    />
+                    <Input
+                        label="Date"
+                        name="date"
+                        value={editedOrder.date}
+                        onChange={handleInputChange}
+                    />
+                    <Input
+                        label="Amount"
+                        name="amount"
+                        value={editedOrder.amount}
+                        onChange={handleInputChange}
+                    />
+                </ModalBody>
+                <ModalFooter>
+                    <Button color='danger' variant="light" onPress={onClose}>Cancel</Button>
+                    <Button color="primary" onClick={handleSave}>Save</Button>
+                </ModalFooter>
             </ModalContent>
         </Modal>
     );

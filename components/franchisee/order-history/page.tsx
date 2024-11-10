@@ -12,6 +12,7 @@ import CustomPagination from '@/components/CustomPagination/page';
 import EditProductModal from '@/components/modals/EditProductModal';
 import DeleteProductModal from '@/components/modals/DeleteProductModal';
 import ReusableTable from '@/components/table/reusable-table';
+import {useSortedFilteredItems} from "@/components/hooks/useSortedFilteredItems";
 
 type ChipColor = 'primary' | 'warning' | 'secondary' | 'default' | 'danger' | 'success';
 type CustomSortDescriptor = {
@@ -66,11 +67,17 @@ export default function OrderHistoryTable() {
     const [page, setPage] = useState(1);
     const rowsPerPage = 5;
 
-    const [invoiceFilter, setInvoiceFilter] = useState('');
-    const [statusFilter, setStatusFilter] = useState('');
+    const [filters, setFilters] = useState({
+        orderInvoice: '',
+        orderStatus: ''
+    });
 
     const [editModalOrder, setEditModalOrder] = useState<Order | null>(null);
     const [deleteModalOrder, setDeleteModalOrder] = useState<Order | null>(null);
+
+    const handleFilterChange = (field: keyof typeof filters, value: string) => {
+        setFilters(prev => ({...prev, [field]: value}));
+    };
 
     const handleSelectionChange = (keys: Set<Key>) => {
         setSelectedKeys(keys);
@@ -100,24 +107,7 @@ export default function OrderHistoryTable() {
         setDeleteModalOrder(null);
     };
 
-    const filteredOrders = useMemo(() => {
-        return orderList.filter((order) => {
-            return (
-                order.orderInvoice.toLowerCase().includes(invoiceFilter.toLowerCase()) &&
-                order.orderStatus.toLowerCase().includes(statusFilter.toLowerCase())
-            );
-        });
-    }, [orderList, invoiceFilter, statusFilter]);
-
-    const sortedItems = useMemo(() => {
-        return [...filteredOrders].sort((a, b) => {
-            const first = a[sortDescriptor.column as keyof Order];
-            const second = b[sortDescriptor.column as keyof Order];
-            const cmp = first < second ? -1 : first > second ? 1 : 0;
-
-            return sortDescriptor.direction === 'descending' ? -cmp : cmp;
-        });
-    }, [filteredOrders, sortDescriptor]);
+    const sortedItems = useSortedFilteredItems(orderList, filters, sortDescriptor, ["orderInvoice", "orderStatus"]);
 
     const pages = Math.ceil(sortedItems.length / rowsPerPage);
 
@@ -178,17 +168,18 @@ export default function OrderHistoryTable() {
             <div className="flex space-x-4 mb-4">
                 <Input
                     placeholder="Search by Invoice"
-                    value={invoiceFilter}
-                    onChange={(e) => setInvoiceFilter(e.target.value)}
+                    value={filters.orderInvoice}
+                    onChange={(e) => handleFilterChange('orderInvoice', e.target.value)}
                     aria-label="Search by Invoice"
                 />
                 <Input
                     placeholder="Search by Status"
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
+                    value={filters.orderStatus}
+                    onChange={(e) => handleFilterChange('orderStatus', e.target.value)}
                     aria-label="Search by Status"
                 />
             </div>
+
             <ReusableTable
                 columns={columns}
                 items={items}
@@ -214,7 +205,7 @@ export default function OrderHistoryTable() {
                 page={page}
                 pages={pages}
                 rowsPerPage={rowsPerPage}
-                totalItems={filteredOrders.length}
+                totalItems={orderList.length}
                 onPageChange={setPage}
             />
         </div>

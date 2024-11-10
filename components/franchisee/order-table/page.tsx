@@ -18,7 +18,7 @@ import {ChevronUpIcon, ChevronDownIcon} from "@radix-ui/react-icons";
 import {orders as orderData, Order} from "./data";
 
 import CustomPagination from "@/components/CustomPagination/page";
-import { useSortedFilteredItems } from "@/components/hooks/useSortedFilteredItems";
+import {useSortedFilteredItems} from "@/components/hooks/useSortedFilteredItems";
 
 type ChipColor = "primary" | "warning" | "secondary" | "default" | "danger" | "success";
 
@@ -58,7 +58,7 @@ const statusConfig: Record<string, { color: ChipColor, variant: string, classNam
     }
 };
 
-export default function OrderHistoryTable() {
+export default function OrderTable() {
     const [orders] = useState<Order[]>(orderData);
     const [selectedKeys, setSelectedKeys] = useState<Set<Key>>(new Set());
     const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({

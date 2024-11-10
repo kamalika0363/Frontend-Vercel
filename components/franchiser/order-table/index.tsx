@@ -13,39 +13,42 @@ import {
     Dropdown,
     DropdownTrigger,
     DropdownMenu,
-    DropdownItem, User
+    DropdownItem,
 } from "@nextui-org/react"
 import {columns, users} from "./data"
-import {formatDate} from "@/lib/utils";
+import {formatDate} from "@/lib/utils"
 import {ChevronDown} from "lucide-react"
-import type {SortDescriptor} from "@nextui-org/table"
-import CustomPagination from "@/components/CustomPagination/page";
+import {SortDescriptor} from "@nextui-org/table"
+import CustomPagination from "@/components/CustomPagination/page"
 
 const statusConfig = {
-    "completed": {
+    completed: {
         color: "secondary",
         variant: "solid",
-        className: "bg-[#e6e6f2] text-[#4a4aff]"
+        className: "bg-[#e6e6f2] text-[#4a4aff]",
     },
-    "queue": {
+    queue: {
         color: "primary",
         variant: "solid",
-        className: "bg-[#f3f3f3] text-[#676767]"
+        className: "bg-[#f3f3f3] text-[#676767]",
     },
     "ready for pickup": {
         color: "warning",
         variant: "solid",
-        className: "bg-[#ffeccc] text-[#965e00]"
+        className: "bg-[#ffeccc] text-[#965e00]",
     },
     "in preparation": {
         color: "default",
         variant: "solid",
-        className: "bg-[#e4ffe4] text-[#1fac1c]"
-    }
+        className: "bg-[#e4ffe4] text-[#1fac1c]",
+    },
 }
 
 const formatStatus = (status: string) => {
-    return status.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+    return status
+        .split(" ")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ")
 }
 
 const getStatusConfig = (status: string) => {
@@ -53,31 +56,41 @@ const getStatusConfig = (status: string) => {
     return statusConfig[normalizedStatus] || statusConfig["in preparation"]
 }
 
+interface User {
+    id: string
+    location: string
+    orderStatus: string
+    amount: string
+    date: string
+}
+
 export default function OrdersTable() {
-    const initialUsers = users.map(user => ({
+    const initialUsers: {
+        date: string;
+        amount: string;
+        orderStatus: string;
+        location: string;
+        id: number;
+        email: string
+    }[] = users.map((user) => ({
         ...user,
-        orderStatus: user.orderStatus.toLowerCase()
+        orderStatus: user.orderStatus.toLowerCase(),
     }))
 
     const [locationFilter, setLocationFilter] = React.useState("")
     const [dateFilter, setDateFilter] = React.useState("")
-    const [selectedKeys, setSelectedKeys] = React.useState(new Set([]))
+    const [selectedKeys, setSelectedKeys] = React.useState<Set<string>>(new Set())
     const [statusFilter, setStatusFilter] = React.useState("All")
-    const [rowsPerPage, setRowsPerPage] = React.useState(5)
+    const [rowsPerPage] = React.useState(5)
     const [sortDescriptor, setSortDescriptor] = React.useState<SortDescriptor>({
         column: "date",
-        direction: "ascending"
+        direction: "ascending",
     })
     const [page, setPage] = React.useState(1)
-    const [usersData, setUsersData] = React.useState(initialUsers)
+    // @ts-ignore
+    const [usersData, setUsersData] = React.useState<User[]>(initialUsers)
 
     const statusOptions = ["All", "Ready for Pickup", "Queue", "In Preparation"]
-
-    const handleStatusChange = (userId: string, newStatus: string) => {
-        setUsersData(prevUsers => prevUsers.map(user =>
-            user.id === userId ? {...user, orderStatus: newStatus.toLowerCase()} : user
-        ))
-    }
 
     const filteredItems = React.useMemo(() => {
         let filteredUsers = [...usersData]
@@ -89,14 +102,12 @@ export default function OrdersTable() {
         }
 
         if (dateFilter) {
-            filteredUsers = filteredUsers.filter((user) =>
-                user.date === dateFilter
-            )
+            filteredUsers = filteredUsers.filter((user) => user.date === dateFilter)
         }
 
         if (statusFilter !== "All") {
-            filteredUsers = filteredUsers.filter((user) =>
-                user.orderStatus === statusFilter.toLowerCase()
+            filteredUsers = filteredUsers.filter(
+                (user) => user.orderStatus === statusFilter.toLowerCase()
             )
         }
         return filteredUsers
@@ -111,7 +122,7 @@ export default function OrdersTable() {
     }, [page, filteredItems, rowsPerPage])
 
     const sortedItems = React.useMemo(() => {
-        return [...items].sort((a: User, b: User) => {
+        return [...items].sort((a, b) => {
             const first = a[sortDescriptor.column as keyof User] as string
             const second = b[sortDescriptor.column as keyof User] as string
             return sortDescriptor.direction === "descending"
@@ -120,68 +131,75 @@ export default function OrdersTable() {
         })
     }, [sortDescriptor, items])
 
-    const renderCell = React.useCallback((user: User, columnKey: React.Key) => {
-        const cellValue = user[columnKey as keyof User]
-
-        switch (columnKey) {
-            case "location":
-                return cellValue
-            case "orderStatus":
-                const status = cellValue as string
-                const {className} = getStatusConfig(status)
-
-                return (
-                    <Dropdown>
-                        <DropdownTrigger>
-                            <Button
-                                size="sm"
-                                className={`${className} flex items-center`}
-                            >
-                                {formatStatus(status)}
-                                <ChevronDown className="ml-2 h-4 w-4"/>
-                            </Button>
-                        </DropdownTrigger>
-                        <DropdownMenu
-                            aria-label="Order Status"
-                            selectionMode="single"
-                            selectedKeys={[status]}
-                            onAction={(key) => handleStatusChange(user.id, key as string)}
-                        >
-                            <DropdownItem
-                                key="completed"
-                                className={statusConfig["completed"].className}
-                            >
-                                {formatStatus("completed")}
-                            </DropdownItem>
-                            <DropdownItem
-                                key="queue"
-                                className={statusConfig["queue"].className}
-                            >
-                                {formatStatus("queue")}
-                            </DropdownItem>
-                            <DropdownItem
-                                key="ready for pickup"
-                                className={statusConfig["ready for pickup"].className}
-                            >
-                                {formatStatus("ready for pickup")}
-                            </DropdownItem>
-                            <DropdownItem
-                                key="in preparation"
-                                className={statusConfig["in preparation"].className}
-                            >
-                                {formatStatus("in preparation")}
-                            </DropdownItem>
-                        </DropdownMenu>
-                    </Dropdown>
+    const renderCell = React.useCallback(
+        (user: User, columnKey: React.Key) => {
+            const handleStatusChange = (userId: string, newStatus: string) => {
+                setUsersData((prevUsers) =>
+                    prevUsers.map((user) =>
+                        user.id === userId ? {...user, orderStatus: newStatus.toLowerCase()} : user
+                    )
                 )
-            case "amount":
-                return cellValue
-            case "date":
-                return formatDate(cellValue as string)
-            default:
-                return cellValue
-        }
-    }, [])
+            }
+            const cellValue = user[columnKey as keyof User]
+
+            switch (columnKey) {
+                case "location":
+                    return cellValue
+                case "orderStatus":
+                    const status = cellValue as string
+                    const {className} = getStatusConfig(status)
+
+                    return (
+                        <Dropdown>
+                            <DropdownTrigger>
+                                <Button size="sm" className={`${className} flex items-center`}>
+                                    {formatStatus(status)}
+                                    <ChevronDown className="ml-2 h-4 w-4"/>
+                                </Button>
+                            </DropdownTrigger>
+                            <DropdownMenu
+                                aria-label="Order Status"
+                                selectionMode="single"
+                                selectedKeys={[status]}
+                                onAction={(key) => handleStatusChange(user.id, key as string)}
+                            >
+                                <DropdownItem
+                                    key="completed"
+                                    className={statusConfig["completed"].className}
+                                >
+                                    {formatStatus("completed")}
+                                </DropdownItem>
+                                <DropdownItem
+                                    key="queue"
+                                    className={statusConfig["queue"].className}
+                                >
+                                    {formatStatus("queue")}
+                                </DropdownItem>
+                                <DropdownItem
+                                    key="ready for pickup"
+                                    className={statusConfig["ready for pickup"].className}
+                                >
+                                    {formatStatus("ready for pickup")}
+                                </DropdownItem>
+                                <DropdownItem
+                                    key="in preparation"
+                                    className={statusConfig["in preparation"].className}
+                                >
+                                    {formatStatus("in preparation")}
+                                </DropdownItem>
+                            </DropdownMenu>
+                        </Dropdown>
+                    )
+                case "amount":
+                    return cellValue
+                case "date":
+                    return formatDate(cellValue as any)
+                default:
+                    return cellValue
+            }
+        },
+        []
+    )
 
     return (
         <div className="space-y-4">
