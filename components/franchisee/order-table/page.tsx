@@ -15,12 +15,10 @@ import {
 } from "@nextui-org/react";
 import {Pencil1Icon, TrashIcon, ChevronUpIcon, ChevronDownIcon} from "@radix-ui/react-icons";
 
+// TODO: API Integration
 import {orders as orderData, Order} from "./data";
 
 import CustomPagination from "@/components/CustomPagination/page";
-import EditProductModal from "@/components/modals/EditProductModal";
-import DeleteProductModal from "@/components/modals/DeleteProductModal";
-import DeleteOrderModal from "@/components/modals/DeleteProductModal";
 
 type ChipColor = "primary" | "warning" | "secondary" | "default" | "danger" | "success";
 
@@ -29,9 +27,9 @@ const columns = [
     {key: "orderStatus", label: "ORDER STATUS", sortable: true},
     {key: "date", label: "DATE", sortable: true},
     {key: "amount", label: "AMOUNT", sortable: true},
-    {key: "actions", label: "ACTIONS"},
 ];
 
+// TODO: Put it to component folder (Modularity)
 const statusConfig: Record<string, { color: ChipColor, variant: string, className: string }> = {
     "queued": {
         color: "primary",
@@ -233,18 +231,6 @@ export default function OrderHistoryTable() {
                 rowsPerPage={rowsPerPage}
                 totalItems={filteredOrders.length}
                 onPageChange={setPage}
-            />
-
-            <EditProductModal
-                order={editModalOrder}
-                onClose={() => setEditModalOrder(null)}
-                onSave={handleSaveEdit}
-            />
-
-            <DeleteOrderModal
-                order={deleteModalOrder}
-                onClose={() => setDeleteModalOrder(null)}
-                onDelete={handleConfirmDelete}
             />
 
         </div>

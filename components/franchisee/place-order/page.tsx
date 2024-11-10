@@ -12,12 +12,10 @@ import {
     Button,
     Chip,
     SortDescriptor,
-    Pagination
 } from "@nextui-org/react";
 import {ChevronUpIcon, ChevronDownIcon, MinusIcon, PlusIcon} from "@radix-ui/react-icons";
 import {orders, Order} from "./data";
 import CustomPagination from "@/components/CustomPagination/page";
-import {ArrowBigRight} from "lucide-react";
 import CartModal from "@/components/modals/cart-modal";
 
 type ChipColor = "primary" | "warning" | "secondary" | "default" | "danger" | "success";
@@ -55,19 +53,45 @@ export default function PlaceOrderTable() {
 
     const [productFilter, setProductFilter] = useState("");
     const [skuFilter, setSkuFilter] = useState("");
-    const [isModalVisible, setModalVisible] = useState(false);
-    const [cartItems, setCartItems] = useState<Order[]>([]);
+    const [selectedOrders, setSelectedOrders] = useState<Order[]>([])
 
+    const handleSelectionChange = (keys: Set<Key>) => {
+        setSelectedKeys(keys)
+        const selected = orderList.filter(order => keys.has(order.key) && order.stockStatus !== "Out of Stock")
+        setSelectedKeys(new Set(selected.map(order => order.key)))
+        setSelectedOrders(selected)
+    }
     const handleQuantityChange = (key: string, increment: boolean) => {
         setOrderList(prevOrders =>
             prevOrders.map(order => {
-                if (order.key === key) {
+                if (order.key === key && order.stockStatus !== "Out of Stock") {
                     const newQuantity = increment ? order.quantity + 1 : Math.max(0, order.quantity - 1);
                     return {...order, quantity: newQuantity};
                 }
                 return order;
             })
         );
+
+        setSelectedOrders((prevSelected) =>
+            prevSelected.map((order) =>
+                order.key === key
+                    ? {
+                        ...order,
+                        quantity: increment ? order.quantity + 1 : Math.max(0, order.quantity - 1),
+                    }
+                    : order
+            )
+        );
+
+        if (selectedKeys.has(key)) {
+            setSelectedOrders(prevSelected =>
+                prevSelected.map(order =>
+                    order.key === key
+                        ? {...order, quantity: increment ? order.quantity + 1 : Math.max(0, order.quantity - 1)}
+                        : order
+                )
+            )
+        }
     };
 
     const filteredOrders = useMemo(() => {
@@ -79,6 +103,7 @@ export default function PlaceOrderTable() {
         });
     }, [orderList, productFilter, skuFilter]);
 
+    // TODO: Move it to components folder
     const sortedItems = useMemo(() => {
         return [...filteredOrders].sort((a, b) => {
             const first = a[sortDescriptor.column as keyof Order];
@@ -141,12 +166,6 @@ export default function PlaceOrderTable() {
         }
     };
 
-    const handleAddToCart = () => {
-        const selectedOrders = orderList.filter(order => selectedKeys.has(order.key));
-        setCartItems(prevCartItems => [...prevCartItems, ...selectedOrders]);
-        setModalVisible(true);
-    };
-
     return (
         <div className="flex flex-col gap-3">
             <div className="flex space-x-4 mb-4">
@@ -167,7 +186,7 @@ export default function PlaceOrderTable() {
                 aria-label="Order information table with pagination"
                 selectionMode="multiple"
                 selectedKeys={selectedKeys}
-                onSelectionChange={(keys: Set<Key>) => setSelectedKeys(keys)}
+                onSelectionChange={handleSelectionChange}
                 sortDescriptor={sortDescriptor}
                 onSortChange={setSortDescriptor as any}
             >
@@ -199,12 +218,7 @@ export default function PlaceOrderTable() {
                 </TableBody>
             </Table>
 
-            <Button
-                className="ml-auto w-[fit-content] bg-slate-700 text-white font-semibold rounded-md"
-                onClick={handleAddToCart}
-            >
-                Add to Cart
-            </Button>
+            <CartModal orders={selectedOrders} onClose={() => setSelectedKeys(new Set())}/>
 
             <CustomPagination
                 page={page}
@@ -214,11 +228,6 @@ export default function PlaceOrderTable() {
                 onPageChange={setPage}
             />
 
-            <CartModal
-                visible={isModalVisible}
-                onClose={() => setModalVisible(false)}
-                orders={cartItems}
-            />
         </div>
     );
 }

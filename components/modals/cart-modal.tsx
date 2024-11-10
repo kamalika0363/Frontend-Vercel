@@ -1,50 +1,81 @@
-import React from 'react';
-import {Modal, Button, ModalHeader, ModalBody, ModalFooter} from '@nextui-org/react';
-import {Order} from "@/components/franchisee/place-order/data";
+'use client'
+
+import React from 'react'
+import {
+    Modal,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    Button,
+    useDisclosure,
+} from '@nextui-org/react'
+import {Order} from "@/components/franchisee/place-order/data"
 
 interface CartModalProps {
-    visible: boolean;
-    onClose: () => void;
-    orders: Order[];
+    orders: Order[]
+    onClose: () => void
 }
 
-const CartModal: React.FC<CartModalProps> = ({visible, onClose, orders}) => {
-    const totalAmount = orders.reduce((acc, order) => acc + order.quantity * parseFloat(order.pricePerUnit.replace('$', '')), 0);
-    const [modalPlacement, setModalPlacement] = React.useState("right");
+export default function CartModal({orders = [], onClose}: CartModalProps) {
+    const {isOpen, onOpen, onOpenChange} = useDisclosure()
+
+    const totalAmount = orders.reduce((sum, order) => {
+        return sum + (order.quantity * Number(order.pricePerUnit.replace('$', '')))
+    }, 0)
 
     return (
-        <Modal
-            open={visible}
-            onClose={onClose}
-            closeButton
-            aria-labelledby="cart-modal"
-            width="600px"
-            value={modalPlacement}
-        >
-            <ModalHeader>
-                <div id="cart-modal" h2>
-                    Cart Details
-                </div>
-            </ModalHeader>
-            <ModalBody>
-                {orders.map((order) => (
-                    <div key={order.key} className="flex justify-between mb-2">
-                        <div>{`${order.product} x${order.quantity}`}</div>
-                        <div>{`$${(order.quantity * parseFloat(order.pricePerUnit.replace('$', ''))).toFixed(2)}`}</div>
-                    </div>
-                ))}
-                <div className="flex justify-between font-bold mt-4">
-                    <div>Total Amount:</div>
-                    <div>{`$${totalAmount.toFixed(2)}`}</div>
-                </div>
-            </ModalBody>
-            <ModalFooter>
-                <Button auto flat onClick={onClose}>
-                    Close
-                </Button>
-            </ModalFooter>
-        </Modal>
-    );
-};
-
-export default CartModal;
+        <div>
+            <Button
+                onPress={onOpen}
+                className="ml-auto w-[fit-content] bg-slate-700 text-white font-semibold rounded-md"
+            >
+                Add to Cart ({orders.length})
+            </Button>
+            <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="lg">
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1">
+                                <h3 className="text-lg font-semibold">Order Details</h3>
+                                <p className="text-sm text-muted-foreground">
+                                    117 Cross ave, Oakville
+                                </p>
+                                <p className="text-sm text-muted-foreground">#F-0120124-68</p>
+                            </ModalHeader>
+                            <ModalBody className="gap-6">
+                                {orders.length > 0 ? (
+                                    <>
+                                        <div className="space-y-4">
+                                            {orders.map((order, index) => (
+                                                <div
+                                                    key={index}
+                                                    className="flex justify-between items-center py-2 border-b"
+                                                >
+                                                    <div>
+                                                        <p className="font-medium">{order.product}</p>
+                                                        <p className="text-sm text-muted-foreground">
+                                                            Quantity: {order.quantity}
+                                                        </p>
+                                                    </div>
+                                                    <p className="font-medium">
+                                                        ${(Number(order.pricePerUnit.replace('$', '')) * order.quantity).toFixed(2)}
+                                                    </p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div className="flex justify-between items-center pt-4 border-t">
+                                            <p className="font-semibold">Total Amount</p>
+                                            <p className="font-semibold">${totalAmount.toFixed(2)}</p>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <p>No items selected. Please select items from the table.</p>
+                                )}
+                            </ModalBody>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
+        </div>
+    )
+}
