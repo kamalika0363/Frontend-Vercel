@@ -1,4 +1,5 @@
 import {useMemo} from "react";
+import {Order} from "@/components/franchisee/order-table/data";
 
 interface SortDescriptor {
     column: string;

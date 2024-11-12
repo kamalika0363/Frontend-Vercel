@@ -62,6 +62,7 @@ export default function OrderTable() {
     const [orders] = useState<Order[]>(orderData);
     const [selectedKeys, setSelectedKeys] = useState<Set<Key>>(new Set());
     const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
+        column: "orderInvoice",
         direction: "ascending",
     });
 
@@ -145,7 +146,7 @@ export default function OrderTable() {
                             {column.label}
                             {column.sortable && column.key === sortDescriptor.column && (
                                 sortDescriptor.direction === "ascending" ? (
-                                    <ChevronUpIcon className="inline ml-1"/>
+                                    <ChevronUpIcon className="hidden ml-1"/>
                                 ) : (
                                     <ChevronDownIcon className="inline ml-1"/>
                                 )

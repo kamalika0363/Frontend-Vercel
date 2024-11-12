@@ -1,36 +1,36 @@
-'use client'
-
+'use client';
 import {Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader} from "@nextui-org/react";
 
-interface Order {
+interface Product {
     key: string;
-    orderInvoice: string;
-    orderStatus: string;
-    date: string;
-    amount: string;
+    productName: string;
+    stock: string;
+    sku: string;
+    availability: string;
+    actions: string;
 }
 
-interface DeleteOrderModalProps {
-    order: Order | null;
+interface DeleteActiveProductModalProps {
+    product: Product | null;
     onClose: () => void;
-    onDelete: (order: Order) => void;
+    onDelete: (product: Product) => void;
 }
 
-export default function DeleteOrderModal({order, onClose, onDelete}: DeleteOrderModalProps) {
-    if (!order) return null;
+export default function DeleteProductModal({product, onClose, onDelete}: DeleteActiveProductModalProps) {
+    if (!product) return null;
 
     const handleDelete = () => {
-        onDelete(order);
+        onDelete(product);
         onClose();
     };
 
-    return (<Modal isOpen={!!order} onClose={onClose}>
+    return (
+        <Modal isOpen={!!product} onClose={onClose}>
             <ModalContent>
                 <ModalHeader className="flex flex-col gap-1">Confirm Deletion</ModalHeader>
                 <ModalBody>
                     <p>
-                        Are you sure you want to delete the order with invoice
-                        number: <strong>{order.orderInvoice}</strong>?
+                        Are you sure you want to delete the product: <strong>{product.productName}</strong>?
                         This action cannot be undone.
                     </p>
                 </ModalBody>
@@ -39,5 +39,6 @@ export default function DeleteOrderModal({order, onClose, onDelete}: DeleteOrder
                     <Button color="danger" onPress={handleDelete}>Delete</Button>
                 </ModalFooter>
             </ModalContent>
-        </Modal>);
+        </Modal>
+    );
 }

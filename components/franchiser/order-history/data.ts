@@ -6,6 +6,8 @@ export interface OrderHistory {
     orderFulfilled: string;
     amount: string;
     actions: string;
+    orderInvoice: string;
+    date: string;
 }
 
 export const orderHistories: OrderHistory[] = [
@@ -16,7 +18,9 @@ export const orderHistories: OrderHistory[] = [
         orderStatus: "Completed",
         orderFulfilled: "12/11/2024",
         amount: "$200",
-        actions: "Paid on 15/12/2024"
+        actions: "Paid on 15/12/2024",
+        orderInvoice: "Invoice-2024",
+        date: "12/11/2024"
     },
     {
         key: "2",
@@ -25,7 +29,9 @@ export const orderHistories: OrderHistory[] = [
         orderStatus: "Pending",
         orderFulfilled: "12/11/2024",
         amount: "$200",
-        actions: "Paid on 15/12/2024"
+        actions: "Paid on 15/12/2024",
+        orderInvoice: "Invoice-2024",
+        date: "12/11/2024"
     },
     {
         key: "3",
@@ -34,7 +40,9 @@ export const orderHistories: OrderHistory[] = [
         orderStatus: "Queued",
         orderFulfilled: "12/11/2024",
         amount: "$200",
-        actions: "Paid on 15/12/2024"
+        actions: "Paid on 15/12/2024",
+        orderInvoice: "Invoice-2024",
+        date: "12/11/2024"
     },
     {
         key: "4",
@@ -43,7 +51,9 @@ export const orderHistories: OrderHistory[] = [
         orderStatus: "Completed",
         orderFulfilled: "12/11/2024",
         amount: "$200",
-        actions: "Paid on 15/12/2024"
+        actions: "Paid on 15/12/2024",
+        orderInvoice: "Invoice-2024",
+        date: "12/11/2024"
     },
     {
         key: "5",
@@ -52,7 +62,9 @@ export const orderHistories: OrderHistory[] = [
         orderStatus: "Completed",
         orderFulfilled: "12/11/2024",
         amount: "$200",
-        actions: "Paid on 15/12/2024"
+        actions: "Paid on 15/12/2024",
+        orderInvoice: "Invoice-2024",
+        date: "12/11/2024"
     },
     {
         key: "6",
@@ -61,7 +73,9 @@ export const orderHistories: OrderHistory[] = [
         orderStatus: "Pending",
         orderFulfilled: "12/11/2024",
         amount: "$200",
-        actions: "Paid on 15/12/2024"
+        actions: "Paid on 15/12/2024",
+        orderInvoice: "Invoice-2024",
+        date: "12/11/2024"
     },
     {
         key: "7",
@@ -70,7 +84,9 @@ export const orderHistories: OrderHistory[] = [
         orderStatus: "Queued",
         orderFulfilled: "12/11/2024",
         amount: "$200",
-        actions: "Paid on 15/12/2024"
+        actions: "Paid on 15/12/2024",
+        orderInvoice: "Invoice-2024",
+        date: "12/11/2024"
     },
     {
         key: "8",
@@ -79,7 +95,9 @@ export const orderHistories: OrderHistory[] = [
         orderStatus: "Cancelled",
         orderFulfilled: "12/11/2024",
         amount: "$200",
-        actions: "Paid on 15/12/2024"
+        actions: "Paid on 15/12/2024",
+        orderInvoice: "Invoice-2024",
+        date: "12/11/2024"
     },
     {
         key: "9",
@@ -88,7 +106,9 @@ export const orderHistories: OrderHistory[] = [
         orderStatus: "Completed",
         orderFulfilled: "12/11/2024",
         amount: "$200",
-        actions: "Paid on 15/12/2024"
+        actions: "Paid on 15/12/2024",
+        orderInvoice: "Invoice-2024",
+        date: "12/11/2024"
     },
     {
         key: "10",
@@ -97,7 +117,9 @@ export const orderHistories: OrderHistory[] = [
         orderStatus: "Pending",
         orderFulfilled: "12/11/2024",
         amount: "$200",
-        actions: "Paid on 15/12/2024"
+        actions: "Paid on 15/12/2024",
+        orderInvoice: "Invoice-2024",
+        date: "12/11/2024"
     },
     {
         key: "11",
@@ -106,7 +128,9 @@ export const orderHistories: OrderHistory[] = [
         orderStatus: "Queued",
         orderFulfilled: "12/11/2024",
         amount: "$200",
-        actions: "Paid on 15/12/2024"
+        actions: "Paid on 15/12/2024",
+        orderInvoice: "Invoice-2024",
+        date: "12/11/2024"
     },
     {
         key: "12",
@@ -115,6 +139,8 @@ export const orderHistories: OrderHistory[] = [
         orderStatus: "Cancelled",
         orderFulfilled: "12/11/2024",
         amount: "$200",
-        actions: "Paid on 15/12/2024"
+        actions: "Paid on 15/12/2024",
+        orderInvoice: "Invoice-2024",
+        date: "12/11/2024"
     }
 ];

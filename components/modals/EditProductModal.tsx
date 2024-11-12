@@ -33,48 +33,46 @@ export default function EditProductModal({order, onClose, onSave}: EditProductMo
 
     const handleSave = () => {
         if (editedOrder) {
-            onSave(editedOrder); // Save edited order to the parent
+            onSave(editedOrder);
         }
-        onClose(); // Close the modal
+        onClose();
     };
 
     if (!order || !editedOrder) return null;
 
-    return (
-        <Modal isOpen={!!order} onClose={onClose}>
-            <ModalContent>
-                <ModalHeader className="flex flex-col gap-1">Edit Order</ModalHeader>
-                <ModalBody>
-                    <Input
-                        label="Order Invoice"
-                        name="orderInvoice"
-                        value={editedOrder.orderInvoice}
-                        onChange={handleInputChange}
-                    />
-                    <Input
-                        label="Order Status"
-                        name="orderStatus"
-                        value={editedOrder.orderStatus}
-                        onChange={handleInputChange}
-                    />
-                    <Input
-                        label="Date"
-                        name="date"
-                        value={editedOrder.date}
-                        onChange={handleInputChange}
-                    />
-                    <Input
-                        label="Amount"
-                        name="amount"
-                        value={editedOrder.amount}
-                        onChange={handleInputChange}
-                    />
-                </ModalBody>
-                <ModalFooter>
-                    <Button color='danger' variant="light" onPress={onClose}>Cancel</Button>
-                    <Button color="primary" onClick={handleSave}>Save</Button>
-                </ModalFooter>
-            </ModalContent>
-        </Modal>
-    );
+    return (<Modal isOpen={!!order} onClose={onClose}>
+        <ModalContent>
+            <ModalHeader className="flex flex-col gap-1">Edit Order</ModalHeader>
+            <ModalBody>
+                <Input
+                    label="Order Invoice"
+                    name="orderInvoice"
+                    value={editedOrder.orderInvoice}
+                    onChange={handleInputChange}
+                />
+                <Input
+                    label="Order Status"
+                    name="orderStatus"
+                    value={editedOrder.orderStatus}
+                    onChange={handleInputChange}
+                />
+                <Input
+                    label="Date"
+                    name="date"
+                    value={editedOrder.date}
+                    onChange={handleInputChange}
+                />
+                <Input
+                    label="Amount"
+                    name="amount"
+                    value={editedOrder.amount}
+                    onChange={handleInputChange}
+                />
+            </ModalBody>
+            <ModalFooter>
+                <Button color='danger' variant="light" onPress={onClose}>Cancel</Button>
+                <Button color="primary" onClick={handleSave}>Save</Button>
+            </ModalFooter>
+        </ModalContent>
+    </Modal>);
 }
