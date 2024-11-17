@@ -28,6 +28,7 @@ const columns = [
     {key: 'actions', label: 'ACTIONS'},
 ];
 
+// TODO: Move to a separate file
 const statusConfig: Record<string, { color: ChipColor, variant: string, className: string }> = {
     'Queued': {
         color: 'warning',
