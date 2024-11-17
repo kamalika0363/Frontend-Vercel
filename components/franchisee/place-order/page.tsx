@@ -48,7 +48,7 @@ export default function PlaceOrderTable() {
     const [skuFilter, setSkuFilter] = useState("");
     const [selectedOrders, setSelectedOrders] = useState<Order[]>([]);
     const [cartCount, setCartCount] = useState(0);
-    const [isInvisible, setIsInvisible] = useState(false);
+    const [isInvisible] = useState(false);
     const [orderId, setOrderId] = useState<string>("");
     const [currentDate, setCurrentDate] = useState<string>("");
 
@@ -142,12 +142,12 @@ export default function PlaceOrderTable() {
                 return order[columnKey as keyof Order];
         }
     };
-    
+
     return (
-        <div className="flex gap-6">
+        <div className="flex gap-6 flex-col md:flex-row">
             <Card className="flex-1">
                 <CardHeader>
-                    <div className="flex space-x-4 mb-4">
+                    <div className="flex space-x-4 mx-6">
                         <div className="mt-2">
                             <Badge color="primary" content={cartCount} isInvisible={isInvisible} shape="circle">
                                 <CartIcon size={30}/>
@@ -169,7 +169,7 @@ export default function PlaceOrderTable() {
                 </CardHeader>
                 <CardBody>
                     <Table
-                        aria-label="Order information table with pagination"
+                        aria-label="Place Order table with pagination"
                         selectionMode="multiple"
                         selectedKeys={selectedKeys}
                         onSelectionChange={handleSelectionChange}
@@ -183,14 +183,16 @@ export default function PlaceOrderTable() {
                             >
                                 {column.label}
                                 {column.sortable && column.key === sortDescriptor.column && (sortDescriptor.direction === "ascending" ? (
-                                    <ChevronUpIcon className="inline ml-1"/>) : (
-                                    <ChevronDownIcon className="inline ml-1"/>))}
+                                    <ChevronUpIcon className="hidden ml-1"/>
+                                ) : (
+                                    <ChevronDownIcon className="inline ml-1"/>
+                                ))}
                             </TableColumn>)}
                         </TableHeader>
                         <TableBody items={items}>
-                            {(item) => (<TableRow key={item.key}>
-                                {(columnKey) => (<TableCell>{renderCell(item, columnKey)}</TableCell>)}
-                            </TableRow>)}
+                            {(item) => <TableRow key={item.key}>
+                                {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+                            </TableRow>}
                         </TableBody>
                     </Table>
                 </CardBody>

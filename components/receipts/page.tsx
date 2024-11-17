@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Card, CardHeader, CardBody, Divider } from "@nextui-org/react";
-import { Order } from "../franchisee/place-order/data";
+import { Order } from "@/components/franchisee/place-order/data";
 
 interface ReceiptProps {
     orderId: string;
@@ -18,7 +18,7 @@ export default function Receipt({ orderId, currentDate, selectedOrders }: Receip
     };
 
     return (
-        <Card className="w-80 h-fit sticky top-4">
+        <Card className="w-full md:w-80 h-fit sticky top-4">
             <CardHeader className="flex flex-col gap-2">
                 <div className="flex justify-between w-full">
                     <h3 className="text-lg font-semibold">Order Details</h3>
