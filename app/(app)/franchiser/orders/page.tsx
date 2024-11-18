@@ -1,6 +1,7 @@
 "use client";
 
-import OrdersTable from "@/components/franchiser/order-table";
+import OrdersTable from "@/components/franchiser/orders/page";
+
 
 export default function Orders() {
     return (

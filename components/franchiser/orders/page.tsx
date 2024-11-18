@@ -2,32 +2,33 @@
 
 import React from "react"
 import {
-    Table,
-    TableHeader,
-    TableColumn,
-    TableBody,
-    TableRow,
-    TableCell,
-    Input,
     Button,
+    Chip,
     Dropdown,
-    DropdownTrigger,
-    DropdownMenu,
     DropdownItem,
+    DropdownMenu,
+    DropdownTrigger,
+    Input,
+    Table,
+    TableBody,
+    TableCell,
+    TableColumn,
+    TableHeader,
+    TableRow
 } from "@nextui-org/react"
 import {columns, users} from "./data"
 import {formatDate} from "@/lib/utils"
-import {ChevronDown} from "lucide-react"
 import {SortDescriptor} from "@nextui-org/table"
 import CustomPagination from "@/components/CustomPagination/page"
+import Link from "next/link"
 
 const statusConfig = {
-    completed: {
+    "completed": {
         color: "secondary",
         variant: "solid",
         className: "bg-[#e6e6f2] text-[#4a4aff]",
     },
-    queue: {
+    "queue": {
         color: "primary",
         variant: "solid",
         className: "bg-[#f3f3f3] text-[#676767]",
@@ -130,16 +131,16 @@ export default function OrdersTable() {
                 : first.localeCompare(second)
         })
     }, [sortDescriptor, items])
+    const handleApprove = (userId: string) => {
+        setUsersData((prevUsers) =>
+            prevUsers.map((user) =>
+                user.id === userId ? {...user, orderStatus: "approved"} : user
+            )
+        )
+    }
 
     const renderCell = React.useCallback(
         (user: User, columnKey: React.Key) => {
-            const handleStatusChange = (userId: string, newStatus: string) => {
-                setUsersData((prevUsers) =>
-                    prevUsers.map((user) =>
-                        user.id === userId ? {...user, orderStatus: newStatus.toLowerCase()} : user
-                    )
-                )
-            }
             const cellValue = user[columnKey as keyof User]
 
             switch (columnKey) {
@@ -149,43 +150,27 @@ export default function OrdersTable() {
                     const status = cellValue as string
                     const {className} = getStatusConfig(status)
 
+                    // @ts-ignore
                     return (
                         <Dropdown>
                             <DropdownTrigger>
-                                <Button size="sm" className={`${className} flex items-center`}>
+                                <Chip
+                                    className={`${className} cursor-pointer flex items-center`}
+                                    variant="flat"
+                                >
                                     {formatStatus(status)}
-                                    <ChevronDown className="ml-2 h-4 w-4"/>
-                                </Button>
+                                </Chip>
                             </DropdownTrigger>
-                            <DropdownMenu
-                                aria-label="Order Status"
-                                selectionMode="single"
-                                selectedKeys={[status]}
-                                onAction={(key) => handleStatusChange(user.id, key as string)}
-                            >
-                                <DropdownItem
-                                    key="completed"
-                                    className={statusConfig["completed"].className}
-                                >
-                                    {formatStatus("completed")}
-                                </DropdownItem>
-                                <DropdownItem
-                                    key="queue"
-                                    className={statusConfig["queue"].className}
-                                >
-                                    {formatStatus("queue")}
-                                </DropdownItem>
-                                <DropdownItem
-                                    key="ready for pickup"
-                                    className={statusConfig["ready for pickup"].className}
-                                >
-                                    {formatStatus("ready for pickup")}
-                                </DropdownItem>
-                                <DropdownItem
-                                    key="in preparation"
-                                    className={statusConfig["in preparation"].className}
-                                >
-                                    {formatStatus("in preparation")}
+                            <DropdownMenu aria-label="Order Actions">
+                                {
+                                    status.toLowerCase() === "queue" && (
+                                        <DropdownItem key="approve" onPress={() => handleApprove(user.id)}>
+                                            Approve
+                                        </DropdownItem>
+                                    )
+                                }
+                                <DropdownItem key="view">
+                                    <Link href={`/franchiser/orders/${user.id}`}>View Details</Link>
                                 </DropdownItem>
                             </DropdownMenu>
                         </Dropdown>

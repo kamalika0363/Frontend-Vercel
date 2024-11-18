@@ -200,6 +200,7 @@ export default function PlaceOrderTable() {
                     </div>
                 </CardHeader>
                 <CardBody>
+                    {/*TODO: use Reusable Table*/}
                     <Table
                         aria-label="Place Order table with pagination"
                         selectionMode="multiple"

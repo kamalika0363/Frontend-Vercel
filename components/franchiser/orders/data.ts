@@ -12,7 +12,6 @@ const statusOptions = [
     {name: "In Preparation", uid: "inPreparation"}
 ];
 
-// Update the users array to use the new statuses
 const users = [
     {
         id: 1,
