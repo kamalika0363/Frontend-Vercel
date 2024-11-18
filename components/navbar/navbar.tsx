@@ -24,14 +24,13 @@ export const NavbarWrapper = ({children}: Props) => {
     const pageTitle = routeTitles[pathname] || 'Dashboard'
 
     return (
-        <div className="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+        <div
+            className="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden my-4 px-4 max-w-[95rem] mx-auto w-full gap-4">
             <div className="md:hidden m-4">
                 <BurguerButton/>
             </div>
-            <div className="px-4 md:px-12 py-6 md:flex justify-start">
-                <div>
-                    <p className="font-bold text-gray-500 text-2xl">{pageTitle}</p>
-                </div>
+            <div className="px-4 py-6 md:flex justify-start">
+                <p className="font-bold text-gray-500 text-2xl">{pageTitle}</p>
             </div>
             {children}
         </div>

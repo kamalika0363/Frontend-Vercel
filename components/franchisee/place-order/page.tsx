@@ -182,7 +182,7 @@ export default function PlaceOrderTable() {
     return (
         <div className="flex gap-6 flex-col md:flex-row">
             <Card className="flex-1">
-                <CardHeader>
+                <CardHeader className="mt-6">
                     <div className="flex space-x-4 mx-6">
                         <Badge color="primary" content={cartCount} shape="circle">
                             <CartIcon size={30} />

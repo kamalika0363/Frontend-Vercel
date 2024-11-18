@@ -1,18 +1,14 @@
 'use client'
 
-import React, {useState, useMemo, Key} from 'react';
-import {
-    Input,
-    Button,
-    Chip,
-} from '@nextui-org/react';
-import {Pencil1Icon, TrashIcon} from '@radix-ui/react-icons';
-import {orders, Order} from './data';
+import React, { useState, useMemo, Key } from 'react';
+import { Input, Button, Chip } from '@nextui-org/react';
+import { Pencil1Icon, TrashIcon } from '@radix-ui/react-icons';
+import { orders, Order } from './data';
 import CustomPagination from '@/components/CustomPagination/page';
 import EditProductModal from '@/components/modals/EditProductModal';
 import DeleteProductModal from '@/components/modals/DeleteProductModal';
 import ReusableTable from '@/components/table/reusable-table';
-import {useSortedFilteredItems} from "@/components/hooks/useSortedFilteredItems";
+import { useSortedFilteredItems } from "@/components/hooks/useSortedFilteredItems";
 
 type ChipColor = 'primary' | 'warning' | 'secondary' | 'default' | 'danger' | 'success';
 type CustomSortDescriptor = {
@@ -21,14 +17,13 @@ type CustomSortDescriptor = {
 };
 
 const columns = [
-    {key: 'orderInvoice', label: 'ORDER INVOICE', sortable: true},
-    {key: 'orderStatus', label: 'ORDER STATUS', sortable: true},
-    {key: 'date', label: 'DATE', sortable: true},
-    {key: 'amount', label: 'AMOUNT', sortable: true},
-    {key: 'actions', label: 'ACTIONS'},
+    { key: 'orderInvoice', label: 'ORDER INVOICE', sortable: true },
+    { key: 'orderStatus', label: 'ORDER STATUS', sortable: true },
+    { key: 'date', label: 'DATE', sortable: true },
+    { key: 'amount', label: 'AMOUNT', sortable: true },
+    { key: 'actions', label: 'ACTIONS' },
 ];
 
-// TODO: Move to a separate file
 const statusConfig: Record<string, { color: ChipColor, variant: string, className: string }> = {
     'Queued': {
         color: 'warning',
@@ -77,7 +72,7 @@ export default function OrderHistoryTable() {
     const [deleteModalOrder, setDeleteModalOrder] = useState<Order | null>(null);
 
     const handleFilterChange = (field: keyof typeof filters, value: string) => {
-        setFilters(prev => ({...prev, [field]: value}));
+        setFilters(prev => ({ ...prev, [field]: value }));
     };
 
     const handleSelectionChange = (keys: Set<Key>) => {
@@ -85,7 +80,9 @@ export default function OrderHistoryTable() {
     };
 
     const handleEdit = (order: Order) => {
-        setEditModalOrder(order);
+        if (order.orderStatus === 'Queued') {
+            setEditModalOrder(order);
+        }
     };
 
     const handleDelete = (order: Order) => {
@@ -138,9 +135,10 @@ export default function OrderHistoryTable() {
                             isIconOnly
                             aria-label="Edit"
                             onClick={() => handleEdit(order)}
-                            className="bg-[#e6f6eb] text-[#1e8255] border-[#1e8255]"
+                            className={`bg-[#e6f6eb] text-[#1e8255] border-[#1e8255] ${order.orderStatus !== 'Queued' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            disabled={order.orderStatus !== 'Queued'}
                         >
-                            <Pencil1Icon className="h-4 w-4"/>
+                            <Pencil1Icon className="h-4 w-4" />
                         </Button>
                         <Button
                             isIconOnly
@@ -148,7 +146,7 @@ export default function OrderHistoryTable() {
                             onClick={() => handleDelete(order)}
                             className="bg-[#feebec] text-[#ce292e] border-[#ce292e]"
                         >
-                            <TrashIcon className="h-4 w-4"/>
+                            <TrashIcon className="h-4 w-4" />
                         </Button>
                     </div>
                 );
