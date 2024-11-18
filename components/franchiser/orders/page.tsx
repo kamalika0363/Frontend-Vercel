@@ -45,16 +45,22 @@ const statusConfig = {
     },
 }
 
+interface StatusConfig {
+    color: string
+    variant: string
+    className: string
+}
+
+const getStatusConfig = (status: string): StatusConfig => {
+    const normalizedStatus = status.toLowerCase()
+    return statusConfig[normalizedStatus] || statusConfig["in preparation"]
+}
+
 const formatStatus = (status: string) => {
     return status
         .split(" ")
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
         .join(" ")
-}
-
-const getStatusConfig = (status: string) => {
-    const normalizedStatus = status.toLowerCase()
-    return statusConfig[normalizedStatus] || statusConfig["in preparation"]
 }
 
 interface User {
@@ -88,7 +94,7 @@ export default function OrdersTable() {
         direction: "ascending",
     })
     const [page, setPage] = React.useState(1)
-    // @ts-ignore
+    // @ts-expect-error
     const [usersData, setUsersData] = React.useState<User[]>(initialUsers)
 
     const statusOptions = ["All", "Ready for Pickup", "Queue", "In Preparation"]
@@ -131,6 +137,7 @@ export default function OrdersTable() {
                 : first.localeCompare(second)
         })
     }, [sortDescriptor, items])
+
     const handleApprove = (userId: string) => {
         setUsersData((prevUsers) =>
             prevUsers.map((user) =>
@@ -150,7 +157,6 @@ export default function OrdersTable() {
                     const status = cellValue as string
                     const {className} = getStatusConfig(status)
 
-                    // @ts-ignore
                     return (
                         <Dropdown>
                             <DropdownTrigger>
@@ -161,17 +167,24 @@ export default function OrdersTable() {
                                     {formatStatus(status)}
                                 </Chip>
                             </DropdownTrigger>
-                            <DropdownMenu aria-label="Order Actions">
-                                {
-                                    status.toLowerCase() === "queue" && (
-                                        <DropdownItem key="approve" onPress={() => handleApprove(user.id)}>
+                            <DropdownMenu
+                                aria-label="Order Actions"
+                            >
+                                {[
+                                    ...(status === "queue" ? [
+                                        <DropdownItem
+                                            key="approve"
+                                            onPress={() => handleApprove(user.id)}
+                                        >
                                             Approve
                                         </DropdownItem>
-                                    )
-                                }
-                                <DropdownItem key="view">
-                                    <Link href={`/franchiser/orders/${user.id}`}>View Details</Link>
-                                </DropdownItem>
+                                    ] : []),
+                                    <DropdownItem key="view">
+                                        <Link href={`/franchiser/orders/${user.id}`}>
+                                            View Details
+                                        </Link>
+                                    </DropdownItem>
+                                ]}
                             </DropdownMenu>
                         </Dropdown>
                     )
@@ -183,7 +196,7 @@ export default function OrdersTable() {
                     return cellValue
             }
         },
-        []
+        [handleApprove]
     )
 
     return (

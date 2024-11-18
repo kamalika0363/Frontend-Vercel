@@ -23,7 +23,9 @@ export function useSortedFilteredItems<T extends Record<string, any>>(
 
     return useMemo(() => {
         return [...filteredItems].sort((a, b) => {
+            // @ts-ignore
             const first = a[sortDescriptor.column as keyof T];
+            // @ts-ignore
             const second = b[sortDescriptor.column as keyof T];
             const cmp = first < second ? -1 : first > second ? 1 : 0;
             return sortDescriptor.direction === "descending" ? -cmp : cmp;

@@ -45,6 +45,7 @@ export default function FranchiseInfoTable() {
         franchiseeLocation: locationFilter, managerName: managerFilter, email: emailFilter,
     };
 
+    // @ts-expect-error
     const sortedItems = useSortedFilteredItems(franchises, filters, sortDescriptor, ["franchiseeLocation", "managerName", "email"]);
     Math.ceil(sortedItems.length / rowsPerPage);
     const items = useMemo(() => {

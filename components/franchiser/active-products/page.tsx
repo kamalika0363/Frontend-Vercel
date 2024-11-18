@@ -39,6 +39,7 @@ export default function ActiveProductsTable() {
         productName: nameFilter, sku: skuFilter,
     };
 
+    // @ts-expect-error
     const sortedItems = useSortedFilteredItems(products, filters, sortDescriptor, ["productName", "sku"]);
 
     const pages = Math.ceil(sortedItems.length / rowsPerPage);

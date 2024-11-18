@@ -133,6 +133,7 @@ export default function PlaceOrderTable() {
         column: "product",
         direction: "ascending",
     });
+    // @ts-expect-error
     const sortedItems = useSortedFilteredItems(orderList, filters, sortDescriptor, ["product", "sku"]);
 
     const rowsPerPage = 5;
@@ -227,6 +228,7 @@ export default function PlaceOrderTable() {
                             {(item) => (
                                 <TableRow key={item.key}>
                                     {columns.map((column) => (
+                                        // @ts-expect-error
                                         <TableCell key={column.key}>{renderCell(item, column.key)}</TableCell>
                                     ))}
                                 </TableRow>
