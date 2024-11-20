@@ -1,18 +1,11 @@
 'use client'
 
 import React from 'react'
-import {
-    Modal,
-    ModalContent,
-    ModalHeader,
-    ModalBody,
-    Button,
-    useDisclosure,
-} from '@nextui-org/react'
-import {Order} from "@/components/franchisee/place-order/data"
+import {Button, Modal, ModalBody, ModalContent, ModalHeader, useDisclosure,} from '@nextui-org/react'
+import {ProductOrder} from "@/lib/franchiseeStore/data"
 
 interface CartModalProps {
-    orders: Order[]
+    orders: ProductOrder[]
     onClose: () => void
 }
 

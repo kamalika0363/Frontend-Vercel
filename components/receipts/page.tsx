@@ -2,12 +2,12 @@
 
 import React from "react";
 import { Card, CardHeader, CardBody, Divider } from "@nextui-org/react";
-import { Order } from "@/components/franchisee/place-order/data";
+import { ProductOrder } from "@/lib/franchiseeStore/data";
 
 interface ReceiptProps {
     orderId: string;
     currentDate: string;
-    selectedOrders: Order[];
+    selectedOrders: ProductOrder[];
 }
 
 export default function Receipt({ orderId, currentDate, selectedOrders }: ReceiptProps) {

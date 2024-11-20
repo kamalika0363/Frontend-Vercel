@@ -1,6 +1,6 @@
-"use client";
+'use client'
 
-import React, { Key, useEffect, useMemo, useState } from "react";
+import React, {useEffect, useMemo} from "react";
 import {
     Button,
     Card,
@@ -17,59 +17,69 @@ import {
     Popover,
     PopoverContent,
     PopoverTrigger,
-    SortDescriptor,
-    Table,
-    TableBody,
-    TableCell,
-    TableColumn,
-    TableHeader,
-    TableRow,
 } from "@nextui-org/react";
-import { ChevronDownIcon, ChevronUpIcon, MinusIcon, PlusIcon } from "@radix-ui/react-icons";
-import { Order, orders } from "./data";
+import {MinusIcon, PlusIcon} from "@radix-ui/react-icons";
+import {ProductOrder} from "@/lib/franchiseeStore/data";
 import CustomPagination from "@/components/CustomPagination/page";
-import { useSortedFilteredItems } from "@/components/hooks/useSortedFilteredItems";
-import { Badge } from "@nextui-org/badge";
-import { CartIcon } from "@nextui-org/shared-icons";
+import {useSortedFilteredItems} from "@/components/hooks/useSortedFilteredItems";
+import {Badge} from "@nextui-org/badge";
+import {CartIcon} from "@nextui-org/shared-icons";
 import Receipt from "@/components/receipts/page";
+import {usePlaceOrderStore} from '@/lib/franchiseeStore/store';
+import ReusableTable from "@/components/table/reusable-table";
 
 const columns = [
-    { key: "product", label: "PRODUCT", sortable: true },
-    { key: "quantity", label: "QUANTITY", sortable: true },
-    { key: "sku", label: "SKU", sortable: true },
-    { key: "pricePerUnit", label: "PRICE PER UNIT", sortable: true },
-    { key: "stockStatus", label: "STOCK STATUS", sortable: true },
+    {key: "product", label: "PRODUCT", sortable: true},
+    {key: "quantity", label: "QUANTITY", sortable: true},
+    {key: "sku", label: "SKU", sortable: true},
+    {key: "pricePerUnit", label: "PRICE PER UNIT", sortable: true},
+    {key: "stockStatus", label: "STOCK STATUS", sortable: true},
 ];
 
 const statusConfig = {
-    "In-Stock Item": { color: "success", variant: "solid", className: "bg-[#e4ffe4] text-[#1fac1c]" },
-    "Out of Stock": { color: "danger", variant: "solid", className: "bg-[#feebec] text-[#ce292e]" },
+    "In-Stock Item": {color: "success", variant: "solid", className: "bg-[#e4ffe4] text-[#1fac1c]"},
+    "Out of Stock": {color: "danger", variant: "solid", className: "bg-[#feebec] text-[#ce292e]"},
 };
 
 export default function PlaceOrderTable() {
-    const [orderList, setOrderList] = useState<Order[]>(orders);
-    const [selectedKeys, setSelectedKeys] = useState<Set<Key>>(new Set());
-    const [page, setPage] = useState(1);
-    const [productFilter, setProductFilter] = useState("");
-    const [skuFilter, setSkuFilter] = useState("");
-    const [selectedOrders, setSelectedOrders] = useState<Order[]>([]);
-    const [cartCount, setCartCount] = useState(0);
-    const [orderId, setOrderId] = useState<string>("");
-    const [currentDate, setCurrentDate] = useState<string>("");
-    const [showOrderModal, setShowOrderModal] = useState(false);
-    const [modalTimer, setModalTimer] = useState(10);
-    const [showNoItemsPopover, setShowNoItemsPopover] = useState(false);
+    const {
+        orderList,
+        selectedKeys,
+        page,
+        productFilter,
+        skuFilter,
+        selectedOrders,
+        cartCount,
+        orderId,
+        currentDate,
+        showOrderModal,
+        modalTimer,
+        showNoItemsPopover,
+        sortDescriptor,
+        setPage,
+        setProductFilter,
+        setSkuFilter,
+        setOrderId,
+        setCurrentDate,
+        setShowOrderModal,
+        setModalTimer,
+        setShowNoItemsPopover,
+        setSortDescriptor,
+        handleQuantityChange,
+        handleSelectionChange,
+        handlePlaceOrder,
+        handleCloseModal
+    } = usePlaceOrderStore();
 
     useEffect(() => {
         setOrderId(new Date().getTime().toString().slice(-6));
         setCurrentDate(new Date().toLocaleDateString());
-    }, []);
+    }, [setOrderId, setCurrentDate]);
 
-    // TODO: Timer for modal auto-close
     useEffect(() => {
         if (showOrderModal) {
             const timer = setInterval(() => {
-                setModalTimer((prev) => {
+                setModalTimer((prev: number) => {
                     if (prev <= 1) {
                         clearInterval(timer);
                         setShowOrderModal(false);
@@ -80,60 +90,9 @@ export default function PlaceOrderTable() {
             }, 1000);
             return () => clearInterval(timer);
         }
-    }, [showOrderModal]);
+    }, [showOrderModal, setModalTimer, setShowOrderModal]);
 
-    const handlePlaceOrder = () => {
-        if (selectedOrders.length > 0) {
-            setShowOrderModal(true);
-            setModalTimer(10);
-            setShowNoItemsPopover(false);
-        } else {
-            setShowNoItemsPopover(true);
-        }
-    };
-
-    const handleCloseModal = () => {
-        setShowOrderModal(false);
-        setModalTimer(10);
-    };
-
-    const handleSelectionChange = (keys: Set<Key>) => {
-        setSelectedKeys(keys);
-        const selected = orderList.filter(
-            (order) => keys.has(order.key) && order.stockStatus !== "Out of Stock"
-        );
-        setSelectedOrders(selected);
-        setCartCount(selected.reduce((total, order) => total + order.quantity, 0));
-    };
-
-    const handleQuantityChange = (key: string, increment: boolean) => {
-        setOrderList((prevOrders) =>
-            prevOrders.map((order) =>
-                order.key === key && order.stockStatus !== "Out of Stock"
-                    ? { ...order, quantity: Math.max(0, order.quantity + (increment ? 1 : -1)) }
-                    : order
-            )
-        );
-
-        setSelectedOrders((prevSelected) =>
-            prevSelected.map((order) =>
-                order.key === key
-                    ? { ...order, quantity: Math.max(0, order.quantity + (increment ? 1 : -1)) }
-                    : order
-            )
-        );
-
-        setCartCount((prevCount) =>
-            increment ? prevCount + 1 : Math.max(0, prevCount - 1)
-        );
-    };
-
-    const filters = { product: productFilter, sku: skuFilter };
-    const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
-        column: "product",
-        direction: "ascending",
-    });
-    // @ts-expect-error
+    const filters = {product: productFilter, sku: skuFilter};
     const sortedItems = useSortedFilteredItems(orderList, filters, sortDescriptor, ["product", "sku"]);
 
     const rowsPerPage = 5;
@@ -144,7 +103,7 @@ export default function PlaceOrderTable() {
         return sortedItems.slice(start, end);
     }, [page, sortedItems]);
 
-    const renderCell = (order: Order, columnKey: React.Key) => {
+    const renderCell = (order: ProductOrder, columnKey: React.Key) => {
         switch (columnKey) {
             case "quantity":
                 return (
@@ -157,7 +116,7 @@ export default function PlaceOrderTable() {
                             onClick={() => handleQuantityChange(order.key, false)}
                             className="min-w-6 w-6 h-6 border border-default-200"
                         >
-                            <MinusIcon className="w-4 h-4" />
+                            <MinusIcon className="w-4 h-4"/>
                         </Button>
                         <span className="w-8 text-center">{order.quantity}</span>
                         <Button
@@ -168,7 +127,7 @@ export default function PlaceOrderTable() {
                             onClick={() => handleQuantityChange(order.key, true)}
                             className="min-w-6 w-6 h-6 border border-default-200"
                         >
-                            <PlusIcon className="w-4 h-4" />
+                            <PlusIcon className="w-4 h-4"/>
                         </Button>
                     </div>
                 );
@@ -176,7 +135,7 @@ export default function PlaceOrderTable() {
                 const config = statusConfig[order.stockStatus] || statusConfig["In-Stock Item"];
                 return <Chip className={config.className} size="sm">{order.stockStatus}</Chip>;
             default:
-                return order[columnKey as keyof Order];
+                return order[columnKey as keyof ProductOrder];
         }
     };
 
@@ -186,7 +145,7 @@ export default function PlaceOrderTable() {
                 <CardHeader className="mt-6">
                     <div className="flex space-x-4 mx-6">
                         <Badge color="primary" content={cartCount} shape="circle">
-                            <CartIcon size={30} />
+                            <CartIcon size={30}/>
                         </Badge>
                         <Input
                             placeholder="Search by Product"
@@ -201,42 +160,20 @@ export default function PlaceOrderTable() {
                     </div>
                 </CardHeader>
                 <CardBody>
-                    {/*TODO: use Reusable Table*/}
-                    <Table
-                        aria-label="Place Order table with pagination"
-                        selectionMode="multiple"
+                    <ReusableTable
+                        columns={columns}
+                        items={items}
                         selectedKeys={selectedKeys}
-                        onSelectionChange={handleSelectionChange}
+                        handleSelectionChange={(keys: Set<React.Key>) => handleSelectionChange(keys)}
                         sortDescriptor={sortDescriptor}
-                        onSortChange={setSortDescriptor as any}
-                    >
-                        <TableHeader columns={columns}>
-                            {(column) => (
-                                <TableColumn key={column.key} allowsSorting={column.sortable}>
-                                    {column.label}
-                                    {column.sortable && column.key === sortDescriptor.column && (
-                                        sortDescriptor.direction === "ascending" ? (
-                                            <ChevronUpIcon className="hidden ml-1" />
-                                        ) : (
-                                            <ChevronDownIcon className="inline ml-1" />
-                                        )
-                                    )}
-                                </TableColumn>
-                            )}
-                        </TableHeader>
-                        <TableBody items={items}>
-                            {(item) => (
-                                <TableRow key={item.key}>
-                                    {columns.map((column) => (
-                                        // @ts-expect-error
-                                        <TableCell key={column.key}>{renderCell(item, column.key)}</TableCell>
-                                    ))}
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
+                        setSortDescriptor={(descriptor: {
+                            column: string;
+                            direction: "ascending" | "descending"
+                        }) => setSortDescriptor(descriptor)}
+                        renderCell={renderCell}
+                    />
                 </CardBody>
-                <Divider />
+                <Divider/>
                 <CardBody>
                     <div className="flex justify-between items-center">
                         <CustomPagination
@@ -247,7 +184,8 @@ export default function PlaceOrderTable() {
                             onPageChange={setPage}
                         />
 
-                        <Popover isOpen={showNoItemsPopover && selectedOrders.length === 0} onOpenChange={(open) => setShowNoItemsPopover(open)}>
+                        <Popover isOpen={showNoItemsPopover && selectedOrders.length === 0}
+                                 onOpenChange={(open) => setShowNoItemsPopover(open)}>
                             <PopoverTrigger>
                                 <Button color="primary" size="sm" onClick={handlePlaceOrder}>Place Order</Button>
                             </PopoverTrigger>
@@ -275,7 +213,7 @@ export default function PlaceOrderTable() {
                 </CardBody>
             </Card>
 
-            <Receipt orderId={orderId} currentDate={currentDate} selectedOrders={selectedOrders} />
+            <Receipt orderId={orderId} currentDate={currentDate} selectedOrders={selectedOrders}/>
         </div>
     );
 }

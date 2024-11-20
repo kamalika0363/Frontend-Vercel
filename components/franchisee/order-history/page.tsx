@@ -1,110 +1,70 @@
 'use client'
 
-import React, { useState, useMemo, Key } from 'react';
-import { Input, Button, Chip } from '@nextui-org/react';
-import { Pencil1Icon, TrashIcon } from '@radix-ui/react-icons';
-import { orders, Order } from './data';
-import CustomPagination from '@/components/CustomPagination/page';
-import EditProductModal from '@/components/modals/EditProductModal';
-import DeleteProductModal from '@/components/modals/DeleteProductModal';
-import ReusableTable from '@/components/table/reusable-table';
-import { useSortedFilteredItems } from "@/components/hooks/useSortedFilteredItems";
+import React, {useMemo} from "react";
+import {Chip, Input} from "@nextui-org/react";
 
-type ChipColor = 'primary' | 'warning' | 'secondary' | 'default' | 'danger' | 'success';
-type CustomSortDescriptor = {
-    column: string;
-    direction: "ascending" | "descending";
-};
+import {useOrderHistoryStore} from "@/lib/franchiseeStore/store";
+
+import CustomPagination from "@/components/CustomPagination/page";
+import {useSortedFilteredItems} from "@/components/hooks/useSortedFilteredItems";
+import ReusableTable from "@/components/table/reusable-table";
+
+type ChipColor = "primary" | "warning" | "secondary" | "default" | "danger" | "success";
 
 const columns = [
-    { key: 'orderInvoice', label: 'ORDER INVOICE', sortable: true },
-    { key: 'orderStatus', label: 'ORDER STATUS', sortable: true },
-    { key: 'date', label: 'DATE', sortable: true },
-    { key: 'amount', label: 'AMOUNT', sortable: true },
-    { key: 'actions', label: 'ACTIONS' },
+    {key: "orderInvoice", label: "ORDER INVOICE", sortable: true},
+    {key: "orderStatus", label: "ORDER STATUS", sortable: true},
+    {key: "date", label: "DATE", sortable: true},
+    {key: "amount", label: "AMOUNT", sortable: true},
 ];
 
+// TODO: Status configuration for chip colors
 const statusConfig: Record<string, { color: ChipColor, variant: string, className: string }> = {
-    'Queued': {
-        color: 'warning',
-        variant: 'solid',
-        className: 'bg-[#fff4e5] text-[#ff9800]',
+    "queued": {
+        color: "primary",
+        variant: "solid",
+        className: "bg-[#f3f3f3] text-[#676767]"
     },
-    'Shipped': {
-        color: 'primary',
-        variant: 'solid',
-        className: 'bg-[#e3f2fd] text-[#2196f3]',
+    "shipped": {
+        color: "warning",
+        variant: "solid",
+        className: "bg-[#ffeccc] text-[#965e00]"
     },
-    'Delivered': {
-        color: 'success',
-        variant: 'solid',
-        className: 'bg-[#e8f5e9] text-[#4caf50]',
+    "delivered": {
+        color: "secondary",
+        variant: "solid",
+        className: "bg-[#e6e6f2] text-[#4a4aff]"
     },
-    'Processing': {
-        color: 'secondary',
-        variant: 'solid',
-        className: 'bg-[#ede7f6] text-[#673ab7]',
+    "processing": {
+        color: "default",
+        variant: "solid",
+        className: "bg-[#e4ffe4] text-[#1fac1c]"
     },
-    'Cancelled': {
-        color: 'danger',
-        variant: 'solid',
-        className: 'bg-[#feebec] text-[#ce292e]',
-    },
+    "cancelled": {
+        color: "danger",
+        variant: "solid",
+        className: "bg-[#feebec] text-[#ce292e]"
+    }
 };
 
-export default function OrderHistoryTable() {
-    const [orderList, setOrderList] = useState<Order[]>(orders);
-    const [selectedKeys, setSelectedKeys] = useState<Set<Key>>(new Set());
-    const [sortDescriptor, setSortDescriptor] = useState<CustomSortDescriptor>({
-        column: 'orderInvoice',
-        direction: "ascending",
-    });
+export default function OrderTable() {
+    const {
+        orderList,
+        selectedKeys,
+        sortDescriptor,
+        page,
+        filters,
+        setSelectedKeys,
+        setSortDescriptor,
+        setPage,
+        setFilters,
+        setEditModalOrder,
+        setDeleteModalOrder
+    } = useOrderHistoryStore();
 
-    const [page, setPage] = useState(1);
     const rowsPerPage = 5;
 
-    const [filters, setFilters] = useState({
-        orderInvoice: '',
-        orderStatus: ''
-    });
-
-    const [editModalOrder, setEditModalOrder] = useState<Order | null>(null);
-    const [deleteModalOrder, setDeleteModalOrder] = useState<Order | null>(null);
-
-    const handleFilterChange = (field: keyof typeof filters, value: string) => {
-        setFilters(prev => ({ ...prev, [field]: value }));
-    };
-
-    const handleSelectionChange = (keys: Set<Key>) => {
-        setSelectedKeys(keys);
-    };
-
-    const handleEdit = (order: Order) => {
-        if (order.orderStatus === 'Queued') {
-            setEditModalOrder(order);
-        }
-    };
-
-    const handleDelete = (order: Order) => {
-        setDeleteModalOrder(order);
-    };
-
-    const handleSaveEdit = (editedOrder: Order) => {
-        setOrderList((prevOrders) =>
-            prevOrders.map((order) =>
-                order.key === editedOrder.key ? editedOrder : order
-            )
-        );
-        setEditModalOrder(null);
-    };
-
-    const handleConfirmDelete = (order: Order) => {
-        setOrderList((prevOrders) =>
-            prevOrders.filter((o) => o.key !== order.key)
-        );
-        setDeleteModalOrder(null);
-    };
-
+    // @ts-ignore
     const sortedItems = useSortedFilteredItems(orderList, filters, sortDescriptor, ["orderInvoice", "orderStatus"]);
 
     const pages = Math.ceil(sortedItems.length / rowsPerPage);
@@ -115,50 +75,29 @@ export default function OrderHistoryTable() {
         return sortedItems.slice(start, end);
     }, [page, sortedItems]);
 
-    const renderCell = (order: Order, columnKey: string) => {
+    const renderCell = (order: any, columnKey: React.Key) => {
         switch (columnKey) {
-            case 'orderStatus':
-                const config = statusConfig[order.orderStatus];
+            case "orderStatus":
+                const status = order.orderStatus?.toLowerCase();
+                const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.queued;
                 return (
-                    <Chip
-                        className={config.className}
-                        size="sm"
-                        color={config.color}
-                    >
+                    <Chip className={config.className} size="sm" color={config.color}>
                         {order.orderStatus}
                     </Chip>
                 );
-            case 'actions':
-                return (
-                    <div className="flex space-x-2">
-                        <Button
-                            isIconOnly
-                            aria-label="Edit"
-                            onClick={() => handleEdit(order)}
-                            className={`bg-[#e6f6eb] text-[#1e8255] border-[#1e8255] ${order.orderStatus !== 'Queued' ? 'opacity-50 cursor-not-allowed' : ''}`}
-                            disabled={order.orderStatus !== 'Queued'}
-                        >
-                            <Pencil1Icon className="h-4 w-4" />
-                        </Button>
-                        <Button
-                            isIconOnly
-                            aria-label="Delete"
-                            onClick={() => handleDelete(order)}
-                            className="bg-[#feebec] text-[#ce292e] border-[#ce292e]"
-                        >
-                            <TrashIcon className="h-4 w-4" />
-                        </Button>
-                    </div>
-                );
-            case 'amount':
+            case "amount":
                 return (
                     <div className="flex flex-col">
                         <span>{order.amount}</span>
                         <span className="text-xs text-gray-500">Paid on {order.date}</span>
                     </div>
                 );
+            case "product":
+                return order.product || "-";
+            case "quantity":
+                return order.quantity || "-";
             default:
-                return order[columnKey as keyof Order];
+                return order[columnKey as keyof typeof order] || "-";
         }
     };
 
@@ -166,45 +105,33 @@ export default function OrderHistoryTable() {
         <div className="flex flex-col gap-3">
             <div className="flex space-x-4 mb-4">
                 <Input
-                    placeholder="Search by Invoice"
+                    placeholder="Search by Order Invoice"
                     value={filters.orderInvoice}
-                    onChange={(e) => handleFilterChange('orderInvoice', e.target.value)}
-                    aria-label="Search by Invoice"
+                    onChange={(e) => setFilters({...filters, orderInvoice: e.target.value})}
                 />
                 <Input
-                    placeholder="Search by Status"
+                    placeholder="Search by Order Status"
                     value={filters.orderStatus}
-                    onChange={(e) => handleFilterChange('orderStatus', e.target.value)}
-                    aria-label="Search by Status"
+                    onChange={(e) => setFilters({...filters, orderStatus: e.target.value})}
                 />
             </div>
-
             <ReusableTable
                 columns={columns}
                 items={items}
                 selectedKeys={selectedKeys}
-                handleSelectionChange={handleSelectionChange}
+                handleSelectionChange={(keys: Set<React.Key>) => setSelectedKeys(keys)}
                 sortDescriptor={sortDescriptor}
-                setSortDescriptor={setSortDescriptor}
+                setSortDescriptor={(descriptor: { column: string; direction: "ascending" | "descending" }) => {
+                    setSortDescriptor(descriptor);
+                }}
                 renderCell={renderCell}
-            />
-
-            <EditProductModal
-                order={editModalOrder}
-                onClose={() => setEditModalOrder(null)}
-                onSave={handleSaveEdit}
-            />
-            <DeleteProductModal
-                order={deleteModalOrder}
-                onClose={() => setDeleteModalOrder(null)}
-                onDelete={handleConfirmDelete}
             />
 
             <CustomPagination
                 page={page}
                 pages={pages}
                 rowsPerPage={rowsPerPage}
-                totalItems={orderList.length}
+                totalItems={sortedItems.length}
                 onPageChange={setPage}
             />
         </div>

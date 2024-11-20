@@ -1,24 +1,13 @@
 'use client'
 
-import React, {useState, useMemo, Key} from "react";
-import {
-    Table,
-    TableHeader,
-    TableColumn,
-    TableBody,
-    TableRow,
-    TableCell,
-    Input,
-    Chip,
-    SortDescriptor
-} from "@nextui-org/react";
-import {ChevronUpIcon, ChevronDownIcon} from "@radix-ui/react-icons";
+import React, {useMemo} from "react";
+import {Chip, Input} from "@nextui-org/react";
 
-// TODO: API Integration
-import {orders as orderData, Order} from "./data";
+import {useOrderStore} from "@/lib/franchiseeStore/store";
 
 import CustomPagination from "@/components/CustomPagination/page";
 import {useSortedFilteredItems} from "@/components/hooks/useSortedFilteredItems";
+import ReusableTable from "@/components/table/reusable-table";
 
 type ChipColor = "primary" | "warning" | "secondary" | "default" | "danger" | "success";
 
@@ -29,7 +18,7 @@ const columns = [
     {key: "amount", label: "AMOUNT", sortable: true},
 ];
 
-// TODO: Put it to component folder (Modularity)
+// TODO: Status configuration for chip colors
 const statusConfig: Record<string, { color: ChipColor, variant: string, className: string }> = {
     "queued": {
         color: "primary",
@@ -59,18 +48,21 @@ const statusConfig: Record<string, { color: ChipColor, variant: string, classNam
 };
 
 export default function OrderTable() {
-    const [orders] = useState<Order[]>(orderData);
-    const [selectedKeys, setSelectedKeys] = useState<Set<Key>>(new Set());
-    const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
-        column: "orderInvoice",
-        direction: "ascending",
-    });
+    const {
+        orders,
+        selectedKeys,
+        sortDescriptor,
+        page,
+        invoiceFilter,
+        statusFilter,
+        setSelectedKeys,
+        setSortDescriptor,
+        setPage,
+        setInvoiceFilter,
+        setStatusFilter
+    } = useOrderStore();
 
-    const [page, setPage] = useState(1);
     const rowsPerPage = 5;
-
-    const [invoiceFilter, setInvoiceFilter] = useState("");
-    const [statusFilter, setStatusFilter] = useState("");
 
     const filters = {
         orderInvoice: invoiceFilter,
@@ -87,18 +79,13 @@ export default function OrderTable() {
         return sortedItems.slice(start, end);
     }, [page, sortedItems]);
 
-
-    const renderCell = (order: Order, columnKey: React.Key) => {
+    const renderCell = (order: any, columnKey: React.Key) => {
         switch (columnKey) {
             case "orderStatus":
-                const status = order.orderStatus.toLowerCase();
+                const status = order.orderStatus?.toLowerCase();
                 const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.queued;
                 return (
-                    <Chip
-                        className={config.className}
-                        size="sm"
-                        color={config.color}
-                    >
+                    <Chip className={config.className} size="sm" color={config.color}>
                         {order.orderStatus}
                     </Chip>
                 );
@@ -109,8 +96,12 @@ export default function OrderTable() {
                         <span className="text-xs text-gray-500">Paid on {order.date}</span>
                     </div>
                 );
+            case "product":
+                return order.product || "-";
+            case "quantity":
+                return order.quantity || "-";
             default:
-                return order[columnKey as keyof Order];
+                return order[columnKey as keyof typeof order] || "-";
         }
     };
 
@@ -128,42 +119,17 @@ export default function OrderTable() {
                     onChange={(e) => setStatusFilter(e.target.value)}
                 />
             </div>
-            <Table
-                aria-label="Order information table with pagination"
-                selectionMode="multiple"
-                radius="xs"
+            <ReusableTable
+                columns={columns}
+                items={items}
                 selectedKeys={selectedKeys}
-                onSelectionChange={(keys: Set<Key>) => setSelectedKeys(keys)}
+                handleSelectionChange={(keys: Set<React.Key>) => setSelectedKeys(keys)}
                 sortDescriptor={sortDescriptor}
-                onSortChange={setSortDescriptor as any}
-            >
-                <TableHeader columns={columns}>
-                    {(column) => (
-                        <TableColumn
-                            key={column.key}
-                            allowsSorting={column.sortable}
-                        >
-                            {column.label}
-                            {column.sortable && column.key === sortDescriptor.column && (
-                                sortDescriptor.direction === "ascending" ? (
-                                    <ChevronUpIcon className="hidden ml-1"/>
-                                ) : (
-                                    <ChevronDownIcon className="inline ml-1"/>
-                                )
-                            )}
-                        </TableColumn>
-                    )}
-                </TableHeader>
-                <TableBody items={items}>
-                    {(item) => (
-                        <TableRow key={item.key}>
-                            {(columnKey) => (
-                                <TableCell>{renderCell(item, columnKey)}</TableCell>
-                            )}
-                        </TableRow>
-                    )}
-                </TableBody>
-            </Table>
+                setSortDescriptor={(descriptor: { column: string; direction: "ascending" | "descending" }) => {
+                    setSortDescriptor(descriptor);
+                }}
+                renderCell={renderCell}
+            />
 
             <CustomPagination
                 page={page}
@@ -172,7 +138,6 @@ export default function OrderTable() {
                 totalItems={sortedItems.length}
                 onPageChange={setPage}
             />
-
         </div>
     );
 }
