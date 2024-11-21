@@ -44,8 +44,10 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
             aria-label="Order history table with pagination"
             selectionMode="multiple"
             selectedKeys={selectedKeys}
+            // @ts-ignore
             onSelectionChange={handleSelectionChange}
             sortDescriptor={sortDescriptor}
+            // @ts-ignore
             onSortChange={(descriptor: CustomSortDescriptor) => setSortDescriptor(descriptor)}
         >
             <TableHeader columns={columns}>

@@ -196,7 +196,7 @@ export default function OrdersTable() {
                     return cellValue
             }
         },
-        [handleApprove]
+        []
     )
     return (
         <div className="space-y-4">
@@ -236,8 +236,10 @@ export default function OrdersTable() {
                 selectedKeys={selectedKeys}
                 selectionMode="multiple"
                 sortDescriptor={sortDescriptor}
-                onSelectionChange={setSelectedKeys}
-                onSortChange={setSortDescriptor}
+                // @ts-ignore
+                onSelectionChange={(keys: Set<string> | string[]) => {
+                    setSelectedKeys(new Set(keys));
+                }}                onSortChange={setSortDescriptor}
             >
                 <TableHeader columns={columns}>
                     {(column) => (

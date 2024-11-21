@@ -47,7 +47,6 @@ export default function FranchiseInfoTable() {
 
     const rowsPerPage = 5;
 
-    // @ts-expect-error
     const sortedItems = useSortedFilteredItems(franchises, {
         locationFilter,
         managerFilter,

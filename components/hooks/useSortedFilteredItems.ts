@@ -1,6 +1,4 @@
-import {useMemo} from "react";
-import {ProductOrder} from "@/lib/franchiseeStore/data";
-import {Product} from "@/lib/franchiserStore/data";
+import { useMemo } from "react";
 
 interface SortDescriptor {
     column: string;
@@ -8,10 +6,10 @@ interface SortDescriptor {
 }
 
 export function useSortedFilteredItems<T extends Record<string, any>>(
-    items: Product[],
-    filters: Record<string, string>,
-    sortDescriptor,
-    filterColumns: string[]
+    items: T[],  // Array of items (can be Product, Order, etc.) (Solves most the errors)
+    filters: Record<string, string>,  // Filters to apply (e.g. { product: 'laptop', sku: '123' })
+    sortDescriptor: SortDescriptor,  // Sorting descriptor to specify which column and direction to sort
+    filterColumns: string[]  // Columns to filter on (e.g. ["product", "sku"] or ["orderId", "status"])
 ) {
     const filteredItems = useMemo(() => {
         return items.filter(item => {
