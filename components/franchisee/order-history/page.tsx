@@ -1,7 +1,8 @@
 'use client'
 
 import React, {useMemo} from "react";
-import {Chip, Input} from "@nextui-org/react";
+import {Chip} from "@nextui-org/react";
+import { Input } from "@/components/ui/input";
 
 import {useOrderHistoryStore} from "@/lib/franchiseeStore/store";
 

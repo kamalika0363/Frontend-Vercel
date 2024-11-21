@@ -17,3 +17,7 @@ body {
     --radius: 0.5rem;
   }
 }
+
+.custom-card-background {
+  background-color: transparent;
+}

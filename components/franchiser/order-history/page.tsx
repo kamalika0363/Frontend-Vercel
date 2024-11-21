@@ -1,7 +1,7 @@
 'use client'
 
 import React, {useCallback, useMemo} from "react";
-import {Button, Chip, Input} from "@nextui-org/react";
+import {Button, Chip} from "@nextui-org/react";
 import {Pencil1Icon, TrashIcon} from "@radix-ui/react-icons";
 import CustomPagination from "@/components/CustomPagination/page";
 import EditOrderHistoryModal from "@/components/modals/EditOrderHistoryModal";
@@ -9,6 +9,7 @@ import DeleteOrderHistoryModal from "@/components/modals/DeleteOrderHistoryModal
 import ReusableTable from "@/components/table/reusable-table";
 import {OrderHistory} from "@/lib/franchiserStore/data";
 import {useOrderHistoryStore} from '@/lib/franchiserStore/store';
+import { Input } from "@/components/ui/input";
 
 const columns = [{key: "location", label: "LOCATION", sortable: true}, {
     key: "orderId", label: "ORDER ID", sortable: true

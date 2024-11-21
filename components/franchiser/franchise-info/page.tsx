@@ -1,13 +1,14 @@
 'use client'
 
 import React, {Key, useMemo} from "react"
-import {Button, Input,} from "@nextui-org/react"
+import {Button} from "@nextui-org/react"
 import {Pencil1Icon, TrashIcon} from "@radix-ui/react-icons"
 import EditFranchiseModal from "@/components/modals/EditFranchiseModal"
 import DeleteFranchiseModal from "@/components/modals/DeleteFranchiseModal"
 import {useFranchiseStore} from "@/lib/franchiserStore/store";
 import {useSortedFilteredItems} from "@/components/hooks/useSortedFilteredItems";
 import ReusableTable from "@/components/table/reusable-table";
+import { Input } from "@/components/ui/input";
 
 const columns = [{key: "franchiseeLocation", label: "FRANCHISEE LOCATION", sortable: true}, {
     key: "managerName", label: "MANAGER NAME", sortable: true

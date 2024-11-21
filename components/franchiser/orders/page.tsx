@@ -8,7 +8,6 @@ import {
     DropdownItem,
     DropdownMenu,
     DropdownTrigger,
-    Input,
     Table,
     TableBody,
     TableCell,
@@ -16,6 +15,8 @@ import {
     TableHeader,
     TableRow
 } from "@nextui-org/react"
+import { Input } from "@/components/ui/input";
+
 import {order as orders, Order} from "@/lib/franchiserStore/data"
 import {formatDate} from "@/lib/utils"
 import {SortDescriptor} from "@nextui-org/table"
@@ -204,17 +205,13 @@ export default function OrdersTable() {
                 <Input
                     placeholder="Search by Location"
                     value={locationFilter}
-                    radius="sm"
                     onChange={(e) => setLocationFilter(e.target.value)}
-                    isClearable
                 />
                 <Input
                     placeholder="Search by Date"
                     type="date"
                     value={dateFilter}
-                    radius="sm"
                     onChange={(e) => setDateFilter(e.target.value)}
-                    isClearable
                 />
             </div>
             <div className="flex space-x-4">

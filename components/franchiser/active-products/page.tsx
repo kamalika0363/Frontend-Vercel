@@ -1,7 +1,7 @@
 'use client'
 
 import React, { Key, useMemo } from "react";
-import { Button, Input, Switch } from "@nextui-org/react";
+import { Button, Switch } from "@nextui-org/react";
 import { Pencil1Icon, TrashIcon } from "@radix-ui/react-icons";
 import { useActiveProductsStore } from "@/lib/franchiserStore/store";
 import CustomPagination from "@/components/CustomPagination/page";
@@ -10,7 +10,7 @@ import { useSortedFilteredItems } from "@/components/hooks/useSortedFilteredItem
 import EditActiveProductsModal from "@/components/modals/EditActiveProductsModal";
 import DeleteActiveProductModal from "@/components/modals/DeleteActiveProductModal";
 import {Product} from "@/lib/franchiserStore/data";
-
+import { Input } from "@/components/ui/input";
 const columns = [
     { key: "productName", label: "PRODUCT NAME", sortable: true },
     { key: "stock", label: "STOCK", sortable: true },

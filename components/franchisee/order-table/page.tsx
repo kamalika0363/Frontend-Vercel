@@ -1,8 +1,8 @@
 'use client'
 
 import React, {useMemo} from "react";
-import {Chip, Input} from "@nextui-org/react";
-
+import {Chip} from "@nextui-org/react";
+import { Input } from "@/components/ui/input";
 import {useOrderStore} from "@/lib/franchiseeStore/store";
 
 import CustomPagination from "@/components/CustomPagination/page";

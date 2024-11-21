@@ -1,44 +1,45 @@
 'use client'
 
-import React, {useEffect, useMemo} from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
     Button,
-    Card,
-    CardBody,
-    CardHeader,
     Chip,
-    Divider,
-    Input,
     Modal,
     ModalBody,
     ModalContent,
     ModalFooter,
     ModalHeader,
+} from "@nextui-org/react";
+
+import {
     Popover,
     PopoverContent,
     PopoverTrigger,
-} from "@nextui-org/react";
-import {MinusIcon, PlusIcon} from "@radix-ui/react-icons";
-import {ProductOrder} from "@/lib/franchiseeStore/data";
+} from "@/components/ui/popover";
+
+import { Input } from "@/components/ui/input";
+import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
+import { ProductOrder } from "@/lib/franchiseeStore/data";
 import CustomPagination from "@/components/CustomPagination/page";
-import {useSortedFilteredItems} from "@/components/hooks/useSortedFilteredItems";
-import {Badge} from "@nextui-org/badge";
-import {CartIcon} from "@nextui-org/shared-icons";
+import { useSortedFilteredItems } from "@/components/hooks/useSortedFilteredItems";
+import { Badge } from "@nextui-org/badge";
+import { CartIcon } from "@nextui-org/shared-icons";
 import Receipt from "@/components/receipts/page";
-import {usePlaceOrderStore} from '@/lib/franchiseeStore/store';
+import { usePlaceOrderStore } from '@/lib/franchiseeStore/store';
 import ReusableTable from "@/components/table/reusable-table";
+import { SearchIcon } from "lucide-react";
 
 const columns = [
-    {key: "product", label: "PRODUCT", sortable: true},
-    {key: "quantity", label: "QUANTITY", sortable: true},
-    {key: "sku", label: "SKU", sortable: true},
-    {key: "pricePerUnit", label: "PRICE PER UNIT", sortable: true},
-    {key: "stockStatus", label: "STOCK STATUS", sortable: true},
+    { key: "product", label: "PRODUCT", sortable: true },
+    { key: "quantity", label: "QUANTITY", sortable: true },
+    { key: "sku", label: "SKU", sortable: true },
+    { key: "pricePerUnit", label: "PRICE PER UNIT", sortable: true },
+    { key: "stockStatus", label: "STOCK STATUS", sortable: true },
 ];
 
 const statusConfig = {
-    "In-Stock Item": {color: "success", variant: "solid", className: "bg-[#e4ffe4] text-[#1fac1c]"},
-    "Out of Stock": {color: "danger", variant: "solid", className: "bg-[#feebec] text-[#ce292e]"},
+    "In-Stock Item": { color: "success", variant: "solid", className: "bg-[#e4ffe4] text-[#1fac1c]" },
+    "Out of Stock": { color: "danger", variant: "solid", className: "bg-[#feebec] text-[#ce292e]" },
 };
 
 export default function PlaceOrderTable() {
@@ -92,7 +93,7 @@ export default function PlaceOrderTable() {
         }
     }, [showOrderModal, setModalTimer, setShowOrderModal]);
 
-    const filters = {product: productFilter, sku: skuFilter};
+    const filters = { product: productFilter, sku: skuFilter };
     const sortedItems = useSortedFilteredItems(orderList, filters, sortDescriptor, ["product", "sku"]);
 
     const rowsPerPage = 5;
@@ -102,6 +103,17 @@ export default function PlaceOrderTable() {
         const end = start + rowsPerPage;
         return sortedItems.slice(start, end);
     }, [page, sortedItems]);
+
+        const [isClient, setIsClient] = useState(false);
+    
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+    
+    if (!isClient) {
+        return null;
+    }
+    
 
     const renderCell = (order: ProductOrder, columnKey: React.Key) => {
         switch (columnKey) {
@@ -116,7 +128,7 @@ export default function PlaceOrderTable() {
                             onClick={() => handleQuantityChange(order.key, false)}
                             className="min-w-6 w-6 h-6 border border-default-200"
                         >
-                            <MinusIcon className="w-4 h-4"/>
+                            <MinusIcon className="w-4 h-4" />
                         </Button>
                         <span className="w-8 text-center">{order.quantity}</span>
                         <Button
@@ -127,7 +139,7 @@ export default function PlaceOrderTable() {
                             onClick={() => handleQuantityChange(order.key, true)}
                             className="min-w-6 w-6 h-6 border border-default-200"
                         >
-                            <PlusIcon className="w-4 h-4"/>
+                            <PlusIcon className="w-4 h-4" />
                         </Button>
                     </div>
                 );
@@ -141,11 +153,11 @@ export default function PlaceOrderTable() {
 
     return (
         <div className="flex gap-6 flex-col md:flex-row">
-            <Card className="flex-1">
-                <CardHeader className="mt-6">
-                    <div className="flex space-x-4 mx-6">
+            <div className="flex-1">
+                <div className="my-6">
+                    <div className="flex space-x-4">
                         <Badge color="primary" content={cartCount} shape="circle">
-                            <CartIcon size={30}/>
+                            <CartIcon size={30} />
                         </Badge>
                         <Input
                             placeholder="Search by Product"
@@ -158,8 +170,8 @@ export default function PlaceOrderTable() {
                             onChange={(e) => setSkuFilter(e.target.value)}
                         />
                     </div>
-                </CardHeader>
-                <CardBody>
+                </div>
+                <div>
                     <ReusableTable
                         columns={columns}
                         items={items}
@@ -172,9 +184,8 @@ export default function PlaceOrderTable() {
                         }) => setSortDescriptor(descriptor)}
                         renderCell={renderCell}
                     />
-                </CardBody>
-                <Divider/>
-                <CardBody>
+                </div>
+                <div className="mt-4">
                     <div className="flex justify-between items-center">
                         <CustomPagination
                             page={page}
@@ -184,10 +195,10 @@ export default function PlaceOrderTable() {
                             onPageChange={setPage}
                         />
 
-                        <Popover isOpen={showNoItemsPopover && selectedOrders.length === 0}
-                                 onOpenChange={(open) => setShowNoItemsPopover(open)}>
+                        <Popover open={showNoItemsPopover && selectedOrders.length === 0}
+                            onOpenChange={(open) => setShowNoItemsPopover(open)}>
                             <PopoverTrigger>
-                                <Button color="primary" size="sm" onClick={handlePlaceOrder}>Place Order</Button>
+                                <Button color="primary" size="md" radius="sm" className="p-2" onClick={handlePlaceOrder}>Place Order</Button>
                             </PopoverTrigger>
                             <PopoverContent>
                                 <div className="px-1 py-2">
@@ -205,15 +216,15 @@ export default function PlaceOrderTable() {
                                     This message will close in {modalTimer} seconds.
                                 </ModalBody>
                                 <ModalFooter>
-                                    <Button color="primary" radius="sm" onPress={handleCloseModal}>Close</Button>
+                                    <Button color="primary" size="md" radius="sm" className="p-2" onPress={handleCloseModal}>Close</Button>
                                 </ModalFooter>
                             </ModalContent>
                         </Modal>
                     </div>
-                </CardBody>
-            </Card>
+                </div>
+            </div>
 
-            <Receipt orderId={orderId} currentDate={currentDate} selectedOrders={selectedOrders}/>
+            <Receipt orderId={orderId} currentDate={currentDate} selectedOrders={selectedOrders} />
         </div>
     );
 }
