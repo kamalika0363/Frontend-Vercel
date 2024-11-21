@@ -1,7 +1,7 @@
 'use client'
 
-import {Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader} from "@nextui-org/react";
-
+import {Modal, ModalBody, ModalContent, ModalFooter, ModalHeader} from "@nextui-org/react";
+import {Button} from "@/components/ui/button";
 interface Order {
     key: string;
     orderInvoice: string;
@@ -35,8 +35,8 @@ export default function DeleteOrderModal({order, onClose, onDelete}: DeleteOrder
                     </p>
                 </ModalBody>
                 <ModalFooter>
-                    <Button color="default" variant="light" onPress={onClose}>Cancel</Button>
-                    <Button color="danger" onPress={handleDelete}>Delete</Button>
+                    <Button variant="cancel" onClick={onClose}>Cancel</Button>
+                    <Button variant="delete"  onClick={handleDelete}>Delete</Button>
                 </ModalFooter>
             </ModalContent>
         </Modal>);

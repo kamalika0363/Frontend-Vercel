@@ -3,7 +3,8 @@
 import { createAuthCookie } from "@/actions/auth.action";
 import { LoginSchema } from "@/helpers/schemas";
 import { LoginFormType } from "@/helpers/types";
-import { Button, Input } from "@nextui-org/react";
+import { Input } from "@nextui-org/react";
+import { Button } from "@/components/ui/button";
 import { Formik } from "formik";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -59,8 +60,8 @@ export const Login = () => {
             </div>
 
             <Button
-              onPress={() => handleSubmit()}
-              variant='flat'
+              onClick={() => handleSubmit()}
+              variant='ghost'
               color='primary'>
               Login
             </Button>

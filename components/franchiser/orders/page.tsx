@@ -2,7 +2,6 @@
 
 import React from "react"
 import {
-    Button,
     Chip,
     Dropdown,
     DropdownItem,
@@ -22,6 +21,7 @@ import {formatDate} from "@/lib/utils"
 import {SortDescriptor} from "@nextui-org/table"
 import CustomPagination from "@/components/CustomPagination/page"
 import Link from "next/link"
+import { Button } from "@/components/ui/button";
 
 const statusConfig = {
     "completed": {
@@ -218,10 +218,9 @@ export default function OrdersTable() {
                 {statusOptions.map((option) => (
                     <Button
                         key={option}
-                        variant={statusFilter === option ? "solid" : "light"}
+                        variant={statusFilter === option ? "outline" : "ghost"}
                         size="sm"
-                        radius="sm"
-                        onPress={() => setStatusFilter(option)}
+                        onClick={() => setStatusFilter(option)}
                     >
                         {option}
                     </Button>

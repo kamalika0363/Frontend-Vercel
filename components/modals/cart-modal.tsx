@@ -1,8 +1,9 @@
 'use client'
 
 import React from 'react'
-import {Button, Modal, ModalBody, ModalContent, ModalHeader, useDisclosure,} from '@nextui-org/react'
+import {Modal, ModalBody, ModalContent, ModalHeader, useDisclosure,} from '@nextui-org/react'
 import {ProductOrder} from "@/lib/franchiseeStore/data"
+import {Button} from "../ui/button"
 
 interface CartModalProps {
     orders: ProductOrder[]
@@ -19,7 +20,7 @@ export default function CartModal({orders = [], onClose}: CartModalProps) {
     return (
         <div>
             <Button
-                onPress={onOpen}
+                onClick={onOpen}
                 className="ml-auto w-[fit-content] bg-slate-700 text-white font-semibold rounded-md"
             >
                 Add to Cart ({orders.length})

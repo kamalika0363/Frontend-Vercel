@@ -1,7 +1,7 @@
 'use client'
 
-import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button} from "@nextui-org/react"
-
+import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter} from "@nextui-org/react"
+import {Button} from "@/components/ui/button"
 interface Franchise {
     key: string;
     franchiseeLocation: string;
@@ -37,10 +37,10 @@ export default function DeleteFranchiseModal({franchise, onClose, onDelete}: Del
                             </p>
                         </ModalBody>
                         <ModalFooter>
-                            <Button color="default" variant="light" onPress={onClose}>
+                            <Button variant="cancel" onClick={onClose}>
                                 Cancel
                             </Button>
-                            <Button color="danger" onPress={handleDelete}>
+                            <Button variant="delete" onClick={handleDelete}>
                                 Delete
                             </Button>
                         </ModalFooter>

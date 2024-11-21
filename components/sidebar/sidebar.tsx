@@ -8,7 +8,7 @@ import {usePathname} from "next/navigation";
 import Image from "next/image";
 import logo from "../../public/logo.svg";
 import {ClipboardIcon, CodeSandboxLogoIcon, CubeIcon, LayersIcon, Pencil2Icon, PersonIcon} from "@radix-ui/react-icons";
-import {Button} from "@nextui-org/react";
+import { Button } from "../ui/button";
 
 export const SidebarWrapper = () => {
     const pathname = usePathname();

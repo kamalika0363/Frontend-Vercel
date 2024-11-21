@@ -1,8 +1,10 @@
 'use client'
 
 import React, { useEffect, useState } from "react";
-import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
 import {OrderHistory} from "@/lib/franchiserStore/data";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 interface EditOrderHistoryModalProps {
     order: OrderHistory | null;
@@ -39,39 +41,34 @@ export default function EditOrderHistoryModal({ order, onClose, onSave }: EditOr
                 <ModalHeader>Edit Order</ModalHeader>
                 <ModalBody>
                     <Input
-                        label="Location"
                         name="location"
                         value={editedOrder.location}
                         onChange={handleInputChange}
                     />
                     <Input
-                        label="Order ID"
                         name="orderId"
                         value={editedOrder.orderId}
                         onChange={handleInputChange}
                     />
                     <Input
-                        label="Order Status"
                         name="orderStatus"
                         value={editedOrder.orderStatus}
                         onChange={handleInputChange}
                     />
                     <Input
-                        label="Order Fulfilled"
                         name="orderFulfilled"
                         value={editedOrder.orderFulfilled}
                         onChange={handleInputChange}
                     />
                     <Input
-                        label="Amount"
                         name="amount"
                         value={editedOrder.amount}
                         onChange={handleInputChange}
                     />
                 </ModalBody>
                 <ModalFooter>
-                    <Button color="danger" variant="light" onPress={onClose}>Cancel</Button>
-                    <Button color="primary" onClick={handleSave}>Save</Button>
+                    <Button variant="delete" onClick={onClose}>Cancel</Button>
+                    <Button variant="save" onClick={handleSave}>Save</Button>
                 </ModalFooter>
             </ModalContent>
         </Modal>

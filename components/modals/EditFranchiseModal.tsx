@@ -1,7 +1,9 @@
 'use client'
 
 import {useState, useEffect} from 'react'
-import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input} from "@nextui-org/react"
+import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter} from "@nextui-org/react"
+import {Button} from "@/components/ui/button"
+import {Input} from "@/components/ui/input"
 
 interface Franchise {
     key: string;
@@ -48,26 +50,22 @@ export default function EditFranchiseModal({franchise, onClose, onSave}: EditFra
                         <ModalHeader className="flex flex-col gap-1">Edit Franchise</ModalHeader>
                         <ModalBody>
                             <Input
-                                label="Franchisee Location"
                                 name="franchiseeLocation"
                                 value={editedFranchise.franchiseeLocation}
                                 onChange={handleInputChange}
                             />
                             <Input
-                                label="Manager Name"
                                 name="managerName"
                                 value={editedFranchise.managerName}
                                 onChange={handleInputChange}
                             />
                             <Input
-                                label="Date Established"
                                 name="dateEstablished"
                                 type="date"
                                 value={editedFranchise.dateEstablished}
                                 onChange={handleInputChange}
                             />
                             <Input
-                                label="Email"
                                 name="email"
                                 type="email"
                                 value={editedFranchise.email}
@@ -75,12 +73,8 @@ export default function EditFranchiseModal({franchise, onClose, onSave}: EditFra
                             />
                         </ModalBody>
                         <ModalFooter>
-                            <Button color="danger" variant="light" onPress={onClose}>
-                                Cancel
-                            </Button>
-                            <Button color="primary" onPress={handleSave}>
-                                Save Changes
-                            </Button>
+                        <Button variant="cancel" onClick={onClose}>Cancel</Button>
+                        <Button variant="save" onClick={handleSave}>Save Changes</Button>
                         </ModalFooter>
                     </>
                 )}

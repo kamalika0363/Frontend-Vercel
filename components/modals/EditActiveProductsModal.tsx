@@ -1,6 +1,8 @@
 'use client';
 import {useEffect, useState} from "react";
-import {Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader} from "@nextui-org/react";
+import {Modal, ModalBody, ModalContent, ModalFooter, ModalHeader} from "@nextui-org/react";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
 
 interface Product {
     key: string;
@@ -46,33 +48,29 @@ export default function ActiveProductModal({product, onClose, onSave}: ActivePro
                 <ModalHeader className="flex flex-col gap-1">Edit Product</ModalHeader>
                 <ModalBody>
                     <Input
-                        label="Product Name"
                         name="productName"
                         value={editedProduct.productName}
                         onChange={handleInputChange}
                     />
                     <Input
-                        label="Stock"
                         name="stock"
                         value={editedProduct.stock}
                         onChange={handleInputChange}
                     />
                     <Input
-                        label="SKU"
                         name="sku"
                         value={editedProduct.sku}
                         onChange={handleInputChange}
                     />
                     <Input
-                        label="Availability"
                         name="availability"
                         value={editedProduct.availability}
                         onChange={handleInputChange}
                     />
                 </ModalBody>
                 <ModalFooter>
-                    <Button color='danger' variant="light" onPress={onClose}>Cancel</Button>
-                    <Button color="primary" onClick={handleSave}>Save</Button>
+                    <Button variant="cancel" onClick={onClose}>Cancel</Button>
+                    <Button variant="save" onClick={handleSave}>Save</Button>
                 </ModalFooter>
             </ModalContent>
         </Modal>

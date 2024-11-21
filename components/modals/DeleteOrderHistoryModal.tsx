@@ -1,8 +1,9 @@
 'use client'
 
 import React from "react";
-import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
 import {OrderHistory} from "@/lib/franchiserStore/data";
+import { Button } from "@/components/ui/button";
 
 interface DeleteOrderHistoryModalProps {
     order: OrderHistory | null;
@@ -28,8 +29,8 @@ export default function DeleteOrderHistoryModal({ order, onClose, onDelete }: De
                     </p>
                 </ModalBody>
                 <ModalFooter>
-                    <Button color="default" variant="light" onPress={onClose}>Cancel</Button>
-                    <Button color="danger" onPress={handleDelete}>Delete</Button>
+                    <Button variant="cancel" onClick={onClose}>Cancel</Button>
+                    <Button variant="delete" onClick={handleDelete}>Delete</Button>
                 </ModalFooter>
             </ModalContent>
         </Modal>

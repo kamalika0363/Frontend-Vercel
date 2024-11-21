@@ -1,5 +1,6 @@
 'use client';
-import {Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader} from "@nextui-org/react";
+import {Modal, ModalBody, ModalContent, ModalFooter, ModalHeader} from "@nextui-org/react";
+import { Button } from "@/components/ui/button";
 
 interface Product {
     key: string;
@@ -35,8 +36,8 @@ export default function DeleteProductModal({product, onClose, onDelete}: DeleteA
                     </p>
                 </ModalBody>
                 <ModalFooter>
-                    <Button color="default" variant="light" onPress={onClose}>Cancel</Button>
-                    <Button color="danger" onPress={handleDelete}>Delete</Button>
+                    <Button variant="cancel" onClick={onClose}>Cancel</Button>
+                    <Button color="delete" onClick={handleDelete}>Delete</Button>
                 </ModalFooter>
             </ModalContent>
         </Modal>

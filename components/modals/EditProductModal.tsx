@@ -1,7 +1,9 @@
 'use client'
 
 import {useEffect, useState} from "react";
-import {Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader} from "@nextui-org/react";
+import {Modal, ModalBody, ModalContent, ModalFooter, ModalHeader} from "@nextui-org/react";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
 
 interface Order {
     key: string;
@@ -45,33 +47,29 @@ export default function EditProductModal({order, onClose, onSave}: EditProductMo
             <ModalHeader className="flex flex-col gap-1">Edit Order</ModalHeader>
             <ModalBody>
                 <Input
-                    label="Order Invoice"
                     name="orderInvoice"
                     value={editedOrder.orderInvoice}
                     onChange={handleInputChange}
                 />
                 <Input
-                    label="Order Status"
                     name="orderStatus"
                     value={editedOrder.orderStatus}
                     onChange={handleInputChange}
                 />
                 <Input
-                    label="Date"
                     name="date"
                     value={editedOrder.date}
                     onChange={handleInputChange}
                 />
                 <Input
-                    label="Amount"
                     name="amount"
                     value={editedOrder.amount}
                     onChange={handleInputChange}
                 />
             </ModalBody>
             <ModalFooter>
-                <Button color='danger' variant="light" onPress={onClose}>Cancel</Button>
-                <Button color="primary" onClick={handleSave}>Save</Button>
+                <Button variant="cancel" onClick={onClose}>Cancel</Button>
+                <Button variant="save" onClick={handleSave}>Save</Button>
             </ModalFooter>
         </ModalContent>
     </Modal>);
