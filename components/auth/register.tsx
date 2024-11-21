@@ -81,7 +81,7 @@ export const Register = () => {
             </div>
 
             <Button
-              onPress={() => handleSubmit()}
+              onClick={() => handleSubmit()}
               variant='ghost'
               color='primary'>
               Register
