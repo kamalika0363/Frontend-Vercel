@@ -41,8 +41,8 @@ export const Login = () => {
             <div className='flex flex-col w-1/2 gap-4 mb-4'>
               <Input
                 variant='bordered'
-                label='Email'
                 type='email'
+                placeholder='Email'
                 value={values.email}
                 isInvalid={!!errors.email && !!touched.email}
                 errorMessage={errors.email}
@@ -50,7 +50,7 @@ export const Login = () => {
               />
               <Input
                 variant='bordered'
-                label='Password'
+                placeholder='Password'
                 type='password'
                 value={values.password}
                 isInvalid={!!errors.password && !!touched.password}

@@ -3,7 +3,8 @@
 import { createAuthCookie } from "@/actions/auth.action";
 import { RegisterSchema } from "@/helpers/schemas";
 import { RegisterFormType } from "@/helpers/types";
-import { Button, Input } from "@nextui-org/react";
+import { Input } from "@nextui-org/react";
+import { Button } from "@/components/ui/button";
 import { Formik } from "formik";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -42,7 +43,7 @@ export const Register = () => {
             <div className='flex flex-col w-1/2 gap-4 mb-4'>
               <Input
                 variant='bordered'
-                label='Name'
+                placeholder='Name'
                 value={values.name}
                 isInvalid={!!errors.name && !!touched.name}
                 errorMessage={errors.name}
@@ -50,7 +51,7 @@ export const Register = () => {
               />
               <Input
                 variant='bordered'
-                label='Email'
+                placeholder='Email'
                 type='email'
                 value={values.email}
                 isInvalid={!!errors.email && !!touched.email}
@@ -59,7 +60,7 @@ export const Register = () => {
               />
               <Input
                 variant='bordered'
-                label='Password'
+                placeholder='Password'
                 type='password'
                 value={values.password}
                 isInvalid={!!errors.password && !!touched.password}
@@ -68,7 +69,7 @@ export const Register = () => {
               />
               <Input
                 variant='bordered'
-                label='Confirm password'
+                placeholder='Confirm password'
                 type='password'
                 value={values.confirmPassword}
                 isInvalid={
@@ -81,7 +82,7 @@ export const Register = () => {
 
             <Button
               onPress={() => handleSubmit()}
-              variant='flat'
+              variant='ghost'
               color='primary'>
               Register
             </Button>
