@@ -16,7 +16,7 @@ import {
     TableHeader,
     TableRow
 } from "@nextui-org/react"
-import {columns, users} from "./data"
+import {order as orders, Order} from "@/lib/franchiserStore/data"
 import {formatDate} from "@/lib/utils"
 import {SortDescriptor} from "@nextui-org/table"
 import CustomPagination from "@/components/CustomPagination/page"
@@ -71,17 +71,17 @@ interface User {
     date: string
 }
 
+const columns = [
+    {key: "Location", label: "location", sortable: true},
+    {key: "Order Status", label: "orderStatus", sortable: true},
+    {key: "Date", label: "date", sortable: true},
+    {key: "Amount", label: "amount", sortable: true},
+];
+
 export default function OrdersTable() {
-    const initialUsers: {
-        date: string;
-        amount: string;
-        orderStatus: string;
-        location: string;
-        id: number;
-        email: string
-    }[] = users.map((user) => ({
-        ...user,
-        orderStatus: user.orderStatus.toLowerCase(),
+    const initialOrders: Order[] = orders.map((order) => ({
+        ...order,
+        orderStatus: order.orderStatus.toLowerCase(),
     }))
 
     const [locationFilter, setLocationFilter] = React.useState("")
@@ -94,31 +94,30 @@ export default function OrdersTable() {
         direction: "ascending",
     })
     const [page, setPage] = React.useState(1)
-    // @ts-expect-error
-    const [usersData, setUsersData] = React.useState<User[]>(initialUsers)
+    const [ordersData, setOrdersData] = React.useState<Order[]>(initialOrders)
 
-    const statusOptions = ["All", "Ready for Pickup", "Queue", "In Preparation"]
+    const statusOptions = ["All", "Completed", "Queue", "In Preparation"]
 
     const filteredItems = React.useMemo(() => {
-        let filteredUsers = [...usersData]
+        let filteredOrders = [...ordersData]
 
         if (locationFilter) {
-            filteredUsers = filteredUsers.filter((user) =>
-                user.location.toLowerCase().includes(locationFilter.toLowerCase())
+            filteredOrders = filteredOrders.filter((order) =>
+                order.location.toLowerCase().includes(locationFilter.toLowerCase())
             )
         }
 
         if (dateFilter) {
-            filteredUsers = filteredUsers.filter((user) => user.date === dateFilter)
+            filteredOrders = filteredOrders.filter((order) => order.date === dateFilter)
         }
 
         if (statusFilter !== "All") {
-            filteredUsers = filteredUsers.filter(
-                (user) => user.orderStatus === statusFilter.toLowerCase()
+            filteredOrders = filteredOrders.filter(
+                (order) => order.orderStatus === statusFilter.toLowerCase()
             )
         }
-        return filteredUsers
-    }, [usersData, locationFilter, dateFilter, statusFilter])
+        return filteredOrders
+    }, [ordersData, locationFilter, dateFilter, statusFilter])
 
     const pages = Math.ceil(filteredItems.length / rowsPerPage)
     const items = React.useMemo(() => {
@@ -138,17 +137,17 @@ export default function OrdersTable() {
         })
     }, [sortDescriptor, items])
 
-    const handleApprove = (userId: string) => {
-        setUsersData((prevUsers) =>
-            prevUsers.map((user) =>
-                user.id === userId ? {...user, orderStatus: "approved"} : user
+    const handleApprove = (orderId: number) => {
+        setOrdersData((prevOrders) =>
+            prevOrders.map((order) =>
+                order.id === orderId ? {...order, orderStatus: "completed"} : order
             )
         )
     }
 
     const renderCell = React.useCallback(
-        (user: User, columnKey: React.Key) => {
-            const cellValue = user[columnKey as keyof User]
+        (order: Order, columnKey: React.Key) => {
+            const cellValue = order[columnKey as keyof Order]
 
             switch (columnKey) {
                 case "location":
@@ -174,13 +173,13 @@ export default function OrdersTable() {
                                     ...(status === "queue" ? [
                                         <DropdownItem
                                             key="approve"
-                                            onPress={() => handleApprove(user.id)}
+                                            onPress={() => handleApprove(order.id)}
                                         >
                                             Approve
                                         </DropdownItem>
                                     ] : []),
                                     <DropdownItem key="view">
-                                        <Link href={`/franchiser/orders/${user.id}`}>
+                                        <Link href={`/franchiser/orders/${order.id}`}>
                                             View Details
                                         </Link>
                                     </DropdownItem>
@@ -191,14 +190,14 @@ export default function OrdersTable() {
                 case "amount":
                     return cellValue
                 case "date":
-                    return formatDate(cellValue as any)
+                    // @ts-ignore
+                    return formatDate(cellValue as string)
                 default:
                     return cellValue
             }
         },
         [handleApprove]
     )
-
     return (
         <div className="space-y-4">
             <div className="flex space-x-4">
@@ -233,7 +232,7 @@ export default function OrdersTable() {
             </div>
             <Table
                 radius="sm"
-                aria-label="Franchise Info Table"
+                aria-label="Orders Table"
                 selectedKeys={selectedKeys}
                 selectionMode="multiple"
                 sortDescriptor={sortDescriptor}
@@ -243,11 +242,11 @@ export default function OrdersTable() {
                 <TableHeader columns={columns}>
                     {(column) => (
                         <TableColumn
-                            key={column.uid}
-                            align={column.uid === "actions" ? "center" : "start"}
+                            key={column.label}
+                            align={column.label === "actions" ? "center" : "start"}
                             allowsSorting={column.sortable}
                         >
-                            {column.name}
+                            {column.key}
                         </TableColumn>
                     )}
                 </TableHeader>

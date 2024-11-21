@@ -1,13 +1,14 @@
 'use client'
 
-import React, {Key, useCallback, useMemo, useState} from "react";
+import React, {useCallback, useMemo} from "react";
 import {Button, Chip, Input} from "@nextui-org/react";
 import {Pencil1Icon, TrashIcon} from "@radix-ui/react-icons";
 import CustomPagination from "@/components/CustomPagination/page";
 import EditOrderHistoryModal from "@/components/modals/EditOrderHistoryModal";
-import DeleteOrderHistoryModal from "@/components/modals/DeleteOrderHistoryModal"; // New Modal
+import DeleteOrderHistoryModal from "@/components/modals/DeleteOrderHistoryModal";
 import ReusableTable from "@/components/table/reusable-table";
-import {orderHistories, OrderHistory} from "@/components/franchiser/order-history/data";
+import {OrderHistory} from "@/lib/franchiserStore/data";
+import {useOrderHistoryStore} from '@/lib/franchiserStore/store';
 
 const columns = [{key: "location", label: "LOCATION", sortable: true}, {
     key: "orderId", label: "ORDER ID", sortable: true
@@ -22,43 +23,36 @@ const statusConfig = {
     "Default": {color: "default", variant: "solid", className: "bg-[#e0e0e0] text-[#757575]"}
 };
 
-type CustomSortDescriptor = {
-    column: string; direction: "ascending" | "descending";
-};
-
 export default function OrderHistoryTable() {
-    const [orderList, setOrderList] = useState<OrderHistory[]>(orderHistories);
-    const [selectedKeys, setSelectedKeys] = useState<Set<Key>>(new Set());
-    const [editModalOrder, setEditModalOrder] = useState<OrderHistory | null>(null);
-    const [deleteModalOrder, setDeleteModalOrder] = useState<OrderHistory | null>(null);
-    const [locationFilter, setLocationFilter] = useState("");
-    const [statusFilter, setStatusFilter] = useState("");
-    const [page, setPage] = useState(1);
+    const {
+        orderList,
+        selectedKeys,
+        editModalOrder,
+        deleteModalOrder,
+        locationFilter,
+        statusFilter,
+        page,
+        sortDescriptor,
+        setSelectedKeys,
+        setEditModalOrder,
+        setDeleteModalOrder,
+        setLocationFilter,
+        setStatusFilter,
+        setPage,
+        setSortDescriptor,
+        handleSaveEdit,
+        handleConfirmDelete
+    } = useOrderHistoryStore();
+
     const rowsPerPage = 5;
-    const [sortDescriptor, setSortDescriptor] = useState<CustomSortDescriptor>({
-        column: 'orderId', direction: 'ascending',
-    });
-    const handleSelectionChange = (keys: Set<Key>) => {
-        setSelectedKeys(keys);
-    };
 
     const handleEdit = useCallback((order: OrderHistory) => {
         setEditModalOrder(order);
-    }, []);
+    }, [setEditModalOrder]);
 
     const handleDelete = useCallback((order: OrderHistory) => {
         setDeleteModalOrder(order);
-    }, []);
-
-    const handleSaveEdit = (editedOrder: OrderHistory) => {
-        setOrderList(prev => prev.map(order => order.key === editedOrder.key ? editedOrder : order));
-        setEditModalOrder(null);
-    };
-
-    const handleConfirmDelete = (order: OrderHistory) => {
-        setOrderList(prev => prev.filter(o => o.key !== order.key));
-        setDeleteModalOrder(null);
-    };
+    }, [setDeleteModalOrder]);
 
     const filteredOrders = useMemo(() => {
         return orderList.filter(order => order.location.toLowerCase().includes(locationFilter.toLowerCase()) && order.orderStatus.toLowerCase().includes(statusFilter.toLowerCase()));
@@ -104,24 +98,36 @@ export default function OrderHistoryTable() {
 
     return (<div className="flex flex-col gap-3">
         <div className="flex space-x-4 mb-4">
-            <Input placeholder="Search by Location" value={locationFilter}
-                   onChange={(e) => setLocationFilter(e.target.value)}/>
-            <Input placeholder="Search by Status" value={statusFilter}
-                   onChange={(e) => setStatusFilter(e.target.value)}/>
+            <Input
+                placeholder="Search by Location"
+                value={locationFilter}
+                onChange={(e) => setLocationFilter(e.target.value)}
+            />
+            <Input
+                placeholder="Search by Status"
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+            />
         </div>
         <ReusableTable
             columns={columns}
             items={items}
             selectedKeys={selectedKeys}
-            handleSelectionChange={handleSelectionChange}
+            handleSelectionChange={setSelectedKeys}
             sortDescriptor={sortDescriptor}
             setSortDescriptor={setSortDescriptor}
             renderCell={renderCell}
         />
-        <EditOrderHistoryModal order={editModalOrder} onClose={() => setEditModalOrder(null)}
-                               onSave={handleSaveEdit}/>
-        <DeleteOrderHistoryModal order={deleteModalOrder} onClose={() => setDeleteModalOrder(null)}
-                                 onDelete={handleConfirmDelete}/>
+        <EditOrderHistoryModal
+            order={editModalOrder}
+            onClose={() => setEditModalOrder(null)}
+            onSave={handleSaveEdit}
+        />
+        <DeleteOrderHistoryModal
+            order={deleteModalOrder}
+            onClose={() => setDeleteModalOrder(null)}
+            onDelete={handleConfirmDelete}
+        />
         <CustomPagination
             page={page}
             pages={pages}

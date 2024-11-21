@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
-import {OrderHistory} from "@/components/franchiser/order-history/data";
+import {OrderHistory} from "@/lib/franchiserStore/data";
 
 interface EditOrderHistoryModalProps {
     order: OrderHistory | null;

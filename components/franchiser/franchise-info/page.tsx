@@ -1,11 +1,11 @@
 'use client'
 
-import React, {Key, useMemo, useState} from "react"
+import React, {Key, useMemo} from "react"
 import {Button, Input,} from "@nextui-org/react"
 import {Pencil1Icon, TrashIcon} from "@radix-ui/react-icons"
 import EditFranchiseModal from "@/components/modals/EditFranchiseModal"
 import DeleteFranchiseModal from "@/components/modals/DeleteFranchiseModal"
-import {users as franchiseData} from "./data";
+import {useFranchiseStore} from "@/lib/franchiserStore/store";
 import {useSortedFilteredItems} from "@/components/hooks/useSortedFilteredItems";
 import ReusableTable from "@/components/table/reusable-table";
 
@@ -14,10 +14,6 @@ const columns = [{key: "franchiseeLocation", label: "FRANCHISEE LOCATION", sorta
 }, {key: "dateEstablished", label: "DATE ESTABLISHED", sortable: true}, {
     key: "email", label: "EMAIL", sortable: true
 }, {key: "actions", label: "ACTIONS"},]
-
-type CustomSortDescriptor = {
-    column: string; direction: "ascending" | "descending";
-};
 
 interface Franchise {
     key: string;
@@ -28,25 +24,36 @@ interface Franchise {
 }
 
 export default function FranchiseInfoTable() {
-    const [franchises, setFranchises] = useState<Franchise[]>(franchiseData);
-    const [page] = useState(1);
-    const [selectedKeys, setSelectedKeys] = useState<Set<Key>>(new Set());
-    const rowsPerPage = 8;
-    const [locationFilter, setLocationFilter] = useState("");
-    const [managerFilter, setManagerFilter] = useState("");
-    const [emailFilter, setEmailFilter] = useState("");
-    const [editModalFranchise, setEditModalFranchise] = useState<Franchise | null>(null);
-    const [deleteModalFranchise, setDeleteModalFranchise] = useState<Franchise | null>(null);
-    const [sortDescriptor, setSortDescriptor] = useState<CustomSortDescriptor>({
-        column: 'franchiseeLocation', direction: 'ascending',
-    });
+    const {
+        franchises,
+        selectedKeys,
+        locationFilter,
+        managerFilter,
+        emailFilter,
+        editModalFranchise,
+        deleteModalFranchise,
+        sortDescriptor,
+        page,
+        setSelectedKeys,
+        setLocationFilter,
+        setManagerFilter,
+        setEmailFilter,
+        setEditModalFranchise,
+        setDeleteModalFranchise,
+        setSortDescriptor,
+        handleSaveEdit,
+        handleConfirmDelete
+    } = useFranchiseStore();
 
-    const filters = {
-        franchiseeLocation: locationFilter, managerName: managerFilter, email: emailFilter,
-    };
+    const rowsPerPage = 5;
 
     // @ts-expect-error
-    const sortedItems = useSortedFilteredItems(franchises, filters, sortDescriptor, ["franchiseeLocation", "managerName", "email"]);
+    const sortedItems = useSortedFilteredItems(franchises, {
+        locationFilter,
+        managerFilter,
+        emailFilter
+    }, sortDescriptor, ["franchiseeLocation", "managerName", "email"]);
+
     Math.ceil(sortedItems.length / rowsPerPage);
     const items = useMemo(() => {
         const start = (page - 1) * rowsPerPage;
@@ -66,15 +73,6 @@ export default function FranchiseInfoTable() {
         setDeleteModalFranchise(franchise);
     };
 
-    const handleSaveEdit = (editedFranchise: Franchise) => {
-        setFranchises(prevFranchises => prevFranchises.map(franchise => franchise.key === editedFranchise.key ? editedFranchise : franchise));
-        setEditModalFranchise(null);
-    };
-
-    const handleConfirmDelete = (franchise: Franchise) => {
-        setFranchises(prevFranchises => prevFranchises.filter(f => f.key !== franchise.key));
-        setDeleteModalFranchise(null);
-    };
 
     const renderCell = (franchisee: Franchise, columnKey: string) => {
         switch (columnKey) {

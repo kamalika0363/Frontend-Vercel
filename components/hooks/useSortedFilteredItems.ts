@@ -1,5 +1,6 @@
 import {useMemo} from "react";
 import {ProductOrder} from "@/lib/franchiseeStore/data";
+import {Product} from "@/lib/franchiserStore/data";
 
 interface SortDescriptor {
     column: string;
@@ -7,7 +8,7 @@ interface SortDescriptor {
 }
 
 export function useSortedFilteredItems<T extends Record<string, any>>(
-    items: ProductOrder[],
+    items: Product[],
     filters: Record<string, string>,
     sortDescriptor,
     filterColumns: string[]
