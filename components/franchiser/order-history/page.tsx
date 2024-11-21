@@ -1,7 +1,9 @@
 'use client'
 
 import React, {useCallback, useMemo} from "react";
-import {Button, Chip} from "@nextui-org/react";
+import {Chip} from "@nextui-org/react";
+import { Button } from "@/components/ui/button";
+
 import {Pencil1Icon, TrashIcon} from "@radix-ui/react-icons";
 import CustomPagination from "@/components/CustomPagination/page";
 import EditOrderHistoryModal from "@/components/modals/EditOrderHistoryModal";
@@ -83,11 +85,11 @@ export default function OrderHistoryTable() {
                 </Chip>);
             case "actions":
                 return (<div className="flex space-x-2">
-                    <Button isIconOnly aria-label="Edit" onClick={() => handleEdit(order)}
+                    <Button aria-label="Edit" onClick={() => handleEdit(order)}
                             className="bg-[#e6f6eb] text-[#1e8255]">
                         <Pencil1Icon className="h-4 w-4"/>
                     </Button>
-                    <Button isIconOnly aria-label="Delete" onClick={() => handleDelete(order)}
+                    <Button aria-label="Delete" onClick={() => handleDelete(order)}
                             className="bg-[#feebec] text-[#ce292e]">
                         <TrashIcon className="h-4 w-4"/>
                     </Button>

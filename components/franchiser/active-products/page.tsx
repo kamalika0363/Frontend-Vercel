@@ -1,7 +1,8 @@
 'use client'
 
 import React, { Key, useMemo } from "react";
-import { Button, Switch } from "@nextui-org/react";
+import { Switch } from "@nextui-org/react";
+import { Button } from "@/components/ui/button";
 import { Pencil1Icon, TrashIcon } from "@radix-ui/react-icons";
 import { useActiveProductsStore } from "@/lib/franchiserStore/store";
 import CustomPagination from "@/components/CustomPagination/page";
@@ -70,7 +71,6 @@ export default function ActiveProductsTable() {
                 return (
                     <div className="flex space-x-2">
                         <Button
-                            isIconOnly
                             aria-label="Edit"
                             onClick={() => setEditModalProduct(product)}
                             className="bg-[#e6f6eb] text-[#1e8255] border-[#1e8255]"
@@ -78,7 +78,6 @@ export default function ActiveProductsTable() {
                             <Pencil1Icon className="h-4 w-4" />
                         </Button>
                         <Button
-                            isIconOnly
                             aria-label="Delete"
                             onClick={() => setDeleteModalProduct(product)}
                             className="bg-[#feebec] text-[#ce292e] border-[#ce292e]"

@@ -27,7 +27,6 @@ import { CartIcon } from "@nextui-org/shared-icons";
 import Receipt from "@/components/receipts/page";
 import { usePlaceOrderStore } from '@/lib/franchiseeStore/store';
 import ReusableTable from "@/components/table/reusable-table";
-import { SearchIcon } from "lucide-react";
 
 const columns = [
     { key: "product", label: "PRODUCT", sortable: true },

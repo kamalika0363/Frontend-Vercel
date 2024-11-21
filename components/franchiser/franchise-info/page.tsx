@@ -1,7 +1,7 @@
 'use client'
 
 import React, {Key, useMemo} from "react"
-import {Button} from "@nextui-org/react"
+import { Button } from "@/components/ui/button";
 import {Pencil1Icon, TrashIcon} from "@radix-ui/react-icons"
 import EditFranchiseModal from "@/components/modals/EditFranchiseModal"
 import DeleteFranchiseModal from "@/components/modals/DeleteFranchiseModal"
@@ -79,7 +79,6 @@ export default function FranchiseInfoTable() {
             case 'actions':
                 return (<div className="flex space-x-2">
                     <Button
-                        isIconOnly
                         aria-label="Edit"
                         onClick={() => handleEdit(franchisee)}
                         className="bg-[#e6f6eb] text-[#1e8255] border-[#1e8255]"
@@ -87,7 +86,6 @@ export default function FranchiseInfoTable() {
                         <Pencil1Icon className="h-4 w-4"/>
                     </Button>
                     <Button
-                        isIconOnly
                         aria-label="Delete"
                         onClick={() => handleDelete(franchisee)}
                         className="bg-[#feebec] text-[#ce292e] border-[#ce292e]"
