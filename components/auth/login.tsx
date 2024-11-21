@@ -3,7 +3,7 @@
 import { createAuthCookie } from "@/actions/auth.action";
 import { LoginSchema } from "@/helpers/schemas";
 import { LoginFormType } from "@/helpers/types";
-import { Input } from "@nextui-org/react";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Formik } from "formik";
 import Link from "next/link";
@@ -40,21 +40,17 @@ export const Login = () => {
           <>
             <div className='flex flex-col w-1/2 gap-4 mb-4'>
               <Input
-                variant='bordered'
                 type='email'
                 placeholder='Email'
                 value={values.email}
-                isInvalid={!!errors.email && !!touched.email}
-                errorMessage={errors.email}
+                className={!!errors.email && !!touched.email ? 'is-invalid' : ''}
                 onChange={handleChange("email")}
               />
               <Input
-                variant='bordered'
                 placeholder='Password'
                 type='password'
                 value={values.password}
-                isInvalid={!!errors.password && !!touched.password}
-                errorMessage={errors.password}
+                className={!!errors.password && !!touched.password ? 'is-invalid' : ''}
                 onChange={handleChange("password")}
               />
             </div>
