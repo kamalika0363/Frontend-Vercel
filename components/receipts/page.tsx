@@ -1,8 +1,11 @@
 "use client";
 
 import React from "react";
-import { Card, CardHeader, CardBody, Divider } from "@nextui-org/react";
 import { ProductOrder } from "@/lib/franchiseeStore/data";
+import {Card, CardContent, CardHeader} from "@/components/ui/card";
+import {Divider} from "@nextui-org/react";
+
+
 
 interface ReceiptProps {
     orderId: string;
@@ -18,7 +21,7 @@ export default function Receipt({ orderId, currentDate, selectedOrders }: Receip
     };
 
     return (
-        <Card className="w-full md:w-80 h-fit sticky top-4">
+        <Card className="w-full md:w-80 h-fit sticky top-4 dark:bg-neutral-950">
             <CardHeader className="flex flex-col gap-2">
                 <div className="flex justify-between w-full">
                     <h3 className="text-lg font-semibold">Order Details</h3>
@@ -31,10 +34,10 @@ export default function Receipt({ orderId, currentDate, selectedOrders }: Receip
                     <span>{currentDate}</span>
                 </div>
             </CardHeader>
-            <Divider/>
-            <CardBody>
+            <CardContent>
+                <Divider />
                 {selectedOrders.length > 0 ? (
-                    <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-4 mt-4">
                         {selectedOrders.map((order) => (
                             <div key={order.key} className="flex flex-col gap-1">
                                 <div className="flex justify-between">
@@ -60,7 +63,7 @@ export default function Receipt({ orderId, currentDate, selectedOrders }: Receip
                         No items selected
                     </div>
                 )}
-            </CardBody>
+            </CardContent>
         </Card>
     );
 }
