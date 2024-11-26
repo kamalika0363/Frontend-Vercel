@@ -5,5 +5,5 @@ const nextConfig = {
 
 module.exports = {
   nextConfig,
-  ignoreBuildErrors : true,
-}
+  ignoreBuildErrors: true,
+};

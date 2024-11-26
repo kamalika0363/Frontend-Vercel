@@ -25,49 +25,55 @@ export const Login = () => {
       await createAuthCookie();
       router.replace("/");
     },
-    [router]
+    [router],
   );
 
   return (
     <>
-      <div className='text-center text-[25px] font-bold mb-6'>Login</div>
+      <div className="text-center text-[25px] font-bold mb-6">Login</div>
 
       <Formik
         initialValues={initialValues}
         validationSchema={LoginSchema}
-        onSubmit={handleLogin}>
+        onSubmit={handleLogin}
+      >
         {({ values, errors, touched, handleChange, handleSubmit }) => (
           <>
-            <div className='flex flex-col w-1/2 gap-4 mb-4'>
+            <div className="flex flex-col w-1/2 gap-4 mb-4">
               <Input
-                type='email'
-                placeholder='Email'
+                type="email"
+                placeholder="Email"
                 value={values.email}
-                className={!!errors.email && !!touched.email ? 'is-invalid' : ''}
+                className={
+                  !!errors.email && !!touched.email ? "is-invalid" : ""
+                }
                 onChange={handleChange("email")}
               />
               <Input
-                placeholder='Password'
-                type='password'
+                placeholder="Password"
+                type="password"
                 value={values.password}
-                className={!!errors.password && !!touched.password ? 'is-invalid' : ''}
+                className={
+                  !!errors.password && !!touched.password ? "is-invalid" : ""
+                }
                 onChange={handleChange("password")}
               />
             </div>
 
             <Button
               onClick={() => handleSubmit()}
-              variant='ghost'
-              color='primary'>
+              variant="ghost"
+              color="primary"
+            >
               Login
             </Button>
           </>
         )}
       </Formik>
 
-      <div className='font-light text-slate-400 mt-4 text-sm'>
+      <div className="font-light text-slate-400 mt-4 text-sm">
         Don&apos;t have an account ?{" "}
-        <Link href='/register' className='font-bold'>
+        <Link href="/register" className="font-bold">
           Register here
         </Link>
       </div>

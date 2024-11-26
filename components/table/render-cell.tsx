@@ -45,8 +45,8 @@ export const RenderCell = ({ user, columnKey }: Props) => {
             cellValue === "active"
               ? "success"
               : cellValue === "paused"
-              ? "danger"
-              : "warning"
+                ? "danger"
+                : "warning"
           }
         >
           <span className="capitalize text-xs">{cellValue}</span>
