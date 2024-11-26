@@ -23,7 +23,7 @@ import { ProductOrder } from "@/lib/franchiseeStore/data";
 import CustomPagination from "@/components/CustomPagination/page";
 import { useSortedFilteredItems } from "@/components/hooks/useSortedFilteredItems";
 import { Badge } from "@nextui-org/badge";
-import { CartIcon } from "@nextui-org/shared-icons";
+import { ShoppingCart } from 'lucide-react';
 import Receipt from "@/components/receipts/page";
 import { usePlaceOrderStore } from '@/lib/franchiseeStore/store';
 import ReusableTable from "@/components/table/reusable-table";
@@ -156,7 +156,7 @@ export default function PlaceOrderTable() {
                 <div className="my-6">
                     <div className="flex space-x-4">
                         <Badge color="primary" content={cartCount} shape="circle">
-                            <CartIcon size={30} />
+                            <ShoppingCart size={30} />
                         </Badge>
                         <Input
                             placeholder="Search by Product"
