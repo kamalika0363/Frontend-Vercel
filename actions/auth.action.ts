@@ -3,8 +3,13 @@
 import { cookies } from "next/headers";
 import { login } from '@/services/authService';
 
-export const createAuthCookie = async (token: string) => {
-  cookies().set("userAuth", token, { 
+export const createAuthCookie = async (data: { 
+  name: string; 
+  email: string; 
+  password: string; 
+}) => {
+  const response = await login(data);
+  cookies().set("userAuth", response.token, { 
     secure: true,
     httpOnly: true,
     sameSite: 'strict',

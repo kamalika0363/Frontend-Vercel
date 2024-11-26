@@ -21,9 +21,16 @@ export const Login = () => {
   const handleLogin = useCallback(
     async (values: LoginFormType) => {
       // `values` contains email & password. You can use provider to connect user
-
-      await createAuthCookie();
-      router.replace("/");
+      try {
+        await createAuthCookie({
+          name: values.email.split('@')[0],
+          email: values.email,
+          password: values.password
+        });
+        router.replace("/");
+      } catch (error) {
+        console.error('Login error:', error);
+      }
     },
     [router],
   );
