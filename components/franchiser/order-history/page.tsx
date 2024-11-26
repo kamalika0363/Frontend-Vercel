@@ -152,8 +152,8 @@ export default function OrderHistoryTable() {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex space-x-4 mb-4">
-        <Input
+      <div className="flex gap-2 lg:space-x-4 mb-4 flex-wrap">
+      <Input
           placeholder="Search by Location"
           value={locationFilter}
           onChange={(e) => setLocationFilter(e.target.value)}

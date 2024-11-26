@@ -202,7 +202,7 @@ export default function OrdersTable() {
   }, []);
   return (
     <div className="space-y-4">
-      <div className="flex space-x-4">
+      <div className="flex gap-2 lg:space-x-4 mb-4 flex-wrap">
         <Input
           placeholder="Search by Location"
           value={locationFilter}

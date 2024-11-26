@@ -120,7 +120,7 @@ export default function OrderTable() {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex space-x-4 mb-4">
+      <div className="flex gap-2 lg:space-x-4 mb-4 flex-wrap">
         <Input
           placeholder="Search by Order Invoice"
           value={filters.orderInvoice}

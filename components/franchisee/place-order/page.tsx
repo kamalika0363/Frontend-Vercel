@@ -171,20 +171,26 @@ export default function PlaceOrderTable() {
     <div className="flex gap-6 flex-col md:flex-row">
       <div className="flex-1">
         <div className="my-6">
-          <div className="flex space-x-4">
-            <Badge color="primary" content={cartCount} shape="circle">
-              <ShoppingCart size={30} />
-            </Badge>
-            <Input
-              placeholder="Search by Product"
-              value={productFilter}
-              onChange={(e) => setProductFilter(e.target.value)}
-            />
-            <Input
-              placeholder="Search by SKU"
-              value={skuFilter}
-              onChange={(e) => setSkuFilter(e.target.value)}
-            />
+          <div className="flex flex-col gap-4">
+            <div>
+              <Badge color="primary" content={cartCount} shape="circle">
+                <ShoppingCart size={30} />
+              </Badge>
+            </div>
+            <div className="flex gap-4 flex-wrap">
+              <Input
+                placeholder="Search by Product"
+                value={productFilter}
+                onChange={(e) => setProductFilter(e.target.value)}
+                className="flex-1"  
+              />
+              <Input
+                placeholder="Search by SKU"
+                value={skuFilter}
+                onChange={(e) => setSkuFilter(e.target.value)}
+                className="flex-1"
+              />
+            </div>
           </div>
         </div>
         <div>
@@ -204,7 +210,7 @@ export default function PlaceOrderTable() {
           />
         </div>
         <div className="mt-4">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center flex-wrap gap-2">
             <CustomPagination
               page={page}
               pages={pages}
