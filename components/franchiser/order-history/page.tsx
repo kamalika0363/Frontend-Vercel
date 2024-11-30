@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useEffect, useState } from "react";
 import { Chip } from "@nextui-org/react";
 import { Button } from "@/components/ui/button";
 
@@ -12,6 +12,7 @@ import ReusableTable from "@/components/table/reusable-table";
 import { OrderHistory } from "@/lib/franchiserStore/data";
 import { useOrderHistoryStore } from "@/lib/franchiserStore/store";
 import { Input } from "@/components/ui/input";
+import { franchiserOrderHistoryService } from "@/services/franchiser/franchiserOrders";
 
 const columns = [
   { key: "location", label: "LOCATION", sortable: true },
@@ -54,6 +55,9 @@ const statusConfig = {
 };
 
 export default function OrderHistoryTable() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
   const {
     orderList,
     selectedKeys,
@@ -72,7 +76,24 @@ export default function OrderHistoryTable() {
     setSortDescriptor,
     handleSaveEdit,
     handleConfirmDelete,
+    setOrderList,
   } = useOrderHistoryStore();
+
+  const fetchOrderHistory = async () => {
+    try{
+      setIsLoading(true);
+      const data = await franchiserOrderHistoryService.getFranchiserOrderHistory();
+      setOrderList(data);
+    }catch(error){
+      console.error("Failed to fetch order history:", error);
+    }finally{
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchOrderHistory();
+  }, [fetchOrderHistory]);
 
   const rowsPerPage = 5;
 
@@ -149,6 +170,15 @@ export default function OrderHistoryTable() {
     },
     [handleEdit, handleDelete],
   );
+
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading orders</div>;
+  }
 
   return (
     <div className="flex flex-col gap-3">

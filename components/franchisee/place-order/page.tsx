@@ -27,6 +27,7 @@ import { ShoppingCart } from "lucide-react";
 import Receipt from "@/components/receipts/page";
 import { usePlaceOrderStore } from "@/lib/franchiseeStore/store";
 import ReusableTable from "@/components/table/reusable-table";
+import { franchiseePlaceOrderService } from "@/services/franchisee/franchiseeOrders";
 
 const columns = [
   { key: "product", label: "PRODUCT", sortable: true },
@@ -50,6 +51,8 @@ const statusConfig = {
 };
 
 export default function PlaceOrderTable() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
   const {
     orderList,
     selectedKeys,
@@ -77,7 +80,28 @@ export default function PlaceOrderTable() {
     handleSelectionChange,
     handlePlaceOrder,
     handleCloseModal,
+    setOrderList,
   } = usePlaceOrderStore();
+
+  const fetchPlaceOrder = async () => {
+    try {
+      setIsLoading(true);
+      const data = await franchiseePlaceOrderService.placeOrder();
+      if (!data) {
+        throw new Error('No data received from the server');
+      }
+      setOrderList(data);
+    } catch (err) {
+      setError(err as Error);
+      console.error('Error fetching orders:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPlaceOrder();
+  }, []);
 
   useEffect(() => {
     setOrderId(new Date().getTime().toString().slice(-6));
@@ -124,6 +148,14 @@ export default function PlaceOrderTable() {
 
   if (!isClient) {
     return null;
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading orders: {error.message}</div>;
   }
 
   const renderCell = (order: ProductOrder, columnKey: React.Key) => {
@@ -182,7 +214,7 @@ export default function PlaceOrderTable() {
                 placeholder="Search by Product"
                 value={productFilter}
                 onChange={(e) => setProductFilter(e.target.value)}
-                className="flex-1"  
+                className="flex-1"
               />
               <Input
                 placeholder="Search by SKU"

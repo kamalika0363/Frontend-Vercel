@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Chip } from "@nextui-org/react";
 import { Input } from "@/components/ui/input";
 import { useOrderStore } from "@/lib/franchiseeStore/store";
@@ -8,6 +8,7 @@ import { useOrderStore } from "@/lib/franchiseeStore/store";
 import CustomPagination from "@/components/CustomPagination/page";
 import { useSortedFilteredItems } from "@/components/hooks/useSortedFilteredItems";
 import ReusableTable from "@/components/table/reusable-table";
+import { franchiseeOrdersService } from "@/services/franchisee/franchiseeOrders";
 
 type ChipColor =
   | "primary"
@@ -57,6 +58,8 @@ const statusConfig: Record<
 };
 
 export default function OrderTable() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
   const {
     orders,
     selectedKeys,
@@ -69,7 +72,24 @@ export default function OrderTable() {
     setPage,
     setInvoiceFilter,
     setStatusFilter,
+    setOrders,
   } = useOrderStore();
+
+  const fetchOrders = async () => {
+    try {
+      setIsLoading(true);
+      const data = await franchiseeOrdersService.getInvoiceOrders();
+      setOrders(data);
+    } catch (err) {
+      setError(err as Error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
 
   const rowsPerPage = 5;
 
@@ -119,6 +139,14 @@ export default function OrderTable() {
     }
   };
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading orders</div>;
+  }
+
   return (
     <div className="flex flex-col gap-3">
       <div className="flex gap-2 lg:space-x-4 mb-4 flex-wrap">
@@ -157,4 +185,7 @@ export default function OrderTable() {
       />
     </div>
   );
+}
+function setOrdersdata(data: any) {
+  throw new Error("Function not implemented.");
 }

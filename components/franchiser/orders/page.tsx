@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Chip,
   Dropdown,
@@ -16,12 +16,13 @@ import {
 } from "@nextui-org/react";
 import { Input } from "@/components/ui/input";
 
-import { order as orders, Order } from "@/lib/franchiserStore/data";
+import { Order } from "@/lib/franchiserStore/data";
 import { formatDate } from "@/lib/utils";
 import { SortDescriptor } from "@nextui-org/table";
 import CustomPagination from "@/components/CustomPagination/page";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { orderService } from '@/services/franchiser/franchiserOrders';
 
 const statusConfig = {
   completed: {
@@ -80,11 +81,6 @@ const columns = [
 ];
 
 export default function OrdersTable() {
-  const initialOrders: Order[] = orders.map((order) => ({
-    ...order,
-    orderStatus: order.orderStatus.toLowerCase(),
-  }));
-
   const [locationFilter, setLocationFilter] = React.useState("");
   const [dateFilter, setDateFilter] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState<Set<string>>(
@@ -97,9 +93,40 @@ export default function OrdersTable() {
     direction: "ascending",
   });
   const [page, setPage] = React.useState(1);
-  const [ordersData, setOrdersData] = React.useState<Order[]>(initialOrders);
+  const [ordersData, setOrdersData] = useState<Order[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
   const statusOptions = ["All", "Completed", "Queue", "In Preparation"];
+
+  const fetchOrders = async () => {
+    try {
+      setIsLoading(true);
+      const data = await orderService.getOrders();
+      setOrdersData(data);
+    } catch (err) {
+      setError(err as Error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const updateOrderStatus = async (orderId: number, status: string) => {
+    try {
+      await orderService.updateOrderStatus(orderId, status);
+      fetchOrders();
+    } catch (err) {
+      console.error('Error updating order:', err);
+    }
+  };
+
+  const handleApprove = (orderId: number) => {
+    updateOrderStatus(orderId, 'completed');
+  };
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
 
   const filteredItems = React.useMemo(() => {
     let filteredOrders = [...ordersData];
@@ -141,14 +168,6 @@ export default function OrdersTable() {
         : first.localeCompare(second);
     });
   }, [sortDescriptor, items]);
-
-  const handleApprove = (orderId: number) => {
-    setOrdersData((prevOrders) =>
-      prevOrders.map((order) =>
-        order.id === orderId ? { ...order, orderStatus: "completed" } : order,
-      ),
-    );
-  };
 
   const renderCell = React.useCallback((order: Order, columnKey: React.Key) => {
     const cellValue = order[columnKey as keyof Order];
@@ -200,6 +219,16 @@ export default function OrdersTable() {
         return cellValue;
     }
   }, []);
+
+  if (isLoading) {
+    // TODO: Add loading spinner
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading orders</div>;
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex gap-2 lg:space-x-4 mb-4 flex-wrap">

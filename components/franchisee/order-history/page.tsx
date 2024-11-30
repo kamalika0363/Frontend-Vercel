@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Chip } from "@nextui-org/react";
 import { Input } from "@/components/ui/input";
 
@@ -9,6 +9,7 @@ import { useOrderHistoryStore } from "@/lib/franchiseeStore/store";
 import CustomPagination from "@/components/CustomPagination/page";
 import { useSortedFilteredItems } from "@/components/hooks/useSortedFilteredItems";
 import ReusableTable from "@/components/table/reusable-table";
+import { franchiseeOrderHistoryService } from "@/services/franchisee/franchiseeOrders";
 
 type ChipColor =
   | "primary"
@@ -58,6 +59,8 @@ const statusConfig: Record<
 };
 
 export default function OrderTable() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
   const {
     orderList,
     selectedKeys,
@@ -68,9 +71,40 @@ export default function OrderTable() {
     setSortDescriptor,
     setPage,
     setFilters,
-    setEditModalOrder,
-    setDeleteModalOrder,
+    setOrderList,
   } = useOrderHistoryStore();
+
+  useEffect(() => {
+    let mounted = true;
+    
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const data = await franchiseeOrderHistoryService.getFranchiseeOrderHistory();
+        if (mounted) {
+          setOrderList(data);
+        }
+      } catch (err) {
+        if (mounted) {
+          if (err instanceof Error) {
+            setError(err);
+          } else {
+            setError(new Error('An unknown error occurred'));
+          }
+        }
+      } finally {
+        if (mounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const rowsPerPage = 5;
 
@@ -117,6 +151,14 @@ export default function OrderTable() {
         return order[columnKey as keyof typeof order] || "-";
     }
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading orders: {error.message}</div>;
+  }
 
   return (
     <div className="flex flex-col gap-3">

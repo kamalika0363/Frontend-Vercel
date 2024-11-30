@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Key, useMemo } from "react";
+import React, { Key, useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Pencil1Icon, TrashIcon } from "@radix-ui/react-icons";
 import EditFranchiseModal from "@/components/modals/EditFranchiseModal";
@@ -9,6 +9,8 @@ import { useFranchiseStore } from "@/lib/franchiserStore/store";
 import { useSortedFilteredItems } from "@/components/hooks/useSortedFilteredItems";
 import ReusableTable from "@/components/table/reusable-table";
 import { Input } from "@/components/ui/input";
+import { franchiserInfoService } from "@/services/franchiser/franchiserOrders";
+import { Info } from "@/lib/franchiserStore/data";
 
 const columns = [
   { key: "franchiseeLocation", label: "FRANCHISEE LOCATION", sortable: true },
@@ -35,6 +37,10 @@ interface Franchise {
 }
 
 export default function FranchiseInfoTable() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const [franchiserInfo, setFranchiserInfo] = useState<Info[]>([]);
+
   const {
     franchises,
     selectedKeys,
@@ -55,6 +61,22 @@ export default function FranchiseInfoTable() {
     handleSaveEdit,
     handleConfirmDelete,
   } = useFranchiseStore();
+
+  const fetchFranchiserInfo = async () => {
+    try {
+      setIsLoading(true);
+      const data = await franchiserInfoService.getFranchiserInfo();
+      setFranchiserInfo(data);
+    } catch (error) {
+      setError(error as Error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFranchiserInfo();
+  }, [fetchFranchiserInfo]);
 
   const rowsPerPage = 5;
 
@@ -113,6 +135,14 @@ export default function FranchiseInfoTable() {
         return franchisee[columnKey as keyof Franchise];
     }
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading franchises</div>;
+  }
 
   return (
     <div className="flex flex-col gap-3">

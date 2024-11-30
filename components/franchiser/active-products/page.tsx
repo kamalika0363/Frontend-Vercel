@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Key, useMemo } from "react";
+import React, { Key, useMemo, useEffect } from "react";
 import { Switch } from "@nextui-org/react";
 import { Button } from "@/components/ui/button";
 import { Pencil1Icon, TrashIcon } from "@radix-ui/react-icons";
@@ -12,6 +12,8 @@ import EditActiveProductsModal from "@/components/modals/EditActiveProductsModal
 import DeleteActiveProductModal from "@/components/modals/DeleteActiveProductModal";
 import { Product } from "@/lib/franchiserStore/data";
 import { Input } from "@/components/ui/input";
+import { franchiserActiveProductsService } from "@/services/franchiser/franchiserOrders";
+
 const columns = [
   { key: "productName", label: "PRODUCT NAME", sortable: true },
   { key: "stock", label: "STOCK", sortable: true },
@@ -23,6 +25,7 @@ const columns = [
 export default function ActiveProductsTable() {
   const {
     products,
+    setProducts,
     selectedKeys,
     sortDescriptor,
     page,
@@ -104,10 +107,24 @@ export default function ActiveProductsTable() {
     }
   };
 
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const data =
+          await franchiserActiveProductsService.getFranchiserActiveProducts();
+        setProducts(data);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      }
+    };
+
+    fetchProducts();
+  }, [setProducts]);
+
   return (
     <div className="flex flex-col gap-3">
       <div className="flex gap-2 lg:space-x-4 mb-4 flex-wrap">
-      <Input
+        <Input
           placeholder="Search by Product Name"
           value={nameFilter}
           onChange={(e) => setNameFilter(e.target.value)}
